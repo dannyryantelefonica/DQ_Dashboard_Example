@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<metametadata-library>
+	
+	<nodes>
+		
+	
+  <node id="dataSourcesRoot" sortChildren="false" visible="false" generated="true" name="dataSources" label="Data Sources">
+      <subNodes>
+        <subNode min="0" id="dataSourcesNode" max="-1"/>
+      </subNodes>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+    </node>
+    <node id="dataSourcesNode" sortChildren="false" visible="false" generated="true" name="dataSource" label="{@name}">
+      <subNodes>
+        
+      
+      
+      <subNode min="1" id="jarFilesWrapper" max="1"/>
+      </subNodes>
+			<attributes>
+				<attribute name="name" type="string"/>
+				<attribute name="driverClass" type="string"/>
+				<attribute name="url" type="string"/>
+				<attribute name="user" type="string"/>
+				<attribute name="password" type="string"/>
+			</attributes>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+    </node>
+    <node id="jarFilesWrapper" sortChildren="false" visible="false" generated="true" name="jarFiles" label="jar files" expanded="true">
+      <subNodes>
+        
+      
+      
+      <subNode min="0" id="jarFilesNode" max="-1"/>
+      </subNodes>
+    </node>
+    <node id="jarFilesNode" sortChildren="false" visible="false" generated="true" name="jarFile" label="jar file">
+			<attributes>
+				<attribute name="file" type="string"/>
+			</attributes>    
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+    </node>
+ 
+
+	</nodes>
+	
+</metametadata-library>

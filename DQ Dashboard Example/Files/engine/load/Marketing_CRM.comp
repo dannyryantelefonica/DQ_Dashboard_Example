@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<purity-config version="10.5.0.ga-2016-06-24">
+	<references/>
+	<component-mappings>
+		<propertyMappings/>
+	</component-mappings>
+
+<!-- (Read & evaluate CRM data) --><component id="Read &amp; evaluate CRM data" disabled="false" mode="NORMAL">
+		<properties fileName="../../data/in/validate_Marketing.comp">
+			<mappings>
+				<mappingEndPoint name="out">
+					<columnMappings/>
+				</mappingEndPoint>
+			</mappings>
+			<parameters/>
+		</properties>
+		<visual-constraints bounds="192,144,-1,-1" layout="vertical"/>
+	</component>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Read &amp; evaluate CRM data" endpoint="out"/>
+		<target step="customer" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (customer) --><step id="customer" className="com.ataccama.dqc.tasks.common.usersteps.io.OutputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<requiredColumns>
+				<requiredColumns name="ID" type="integer"/>
+				<requiredColumns name="CSTMR_TYPE" type="string"/>
+				<requiredColumns name="exp_CSTMR_TYPE" type="string"/>
+				<requiredColumns name="FULL_NM" type="string"/>
+				<requiredColumns name="exp_FULL_NM" type="string"/>
+				<requiredColumns name="GNDR" type="string"/>
+				<requiredColumns name="exp_GNDR" type="string"/>
+				<requiredColumns name="PHONE_AREA_CD" type="string"/>
+				<requiredColumns name="PHONE_NMBR" type="string"/>
+				<requiredColumns name="exp_PHONE" type="string"/>
+				<requiredColumns name="EMAIL" type="string"/>
+				<requiredColumns name="exp_EMAIL" type="string"/>
+			</requiredColumns>
+		</properties>
+		<visual-constraints bounds="192,264,-1,-1" layout="vertical"/>
+	</step>
+
+</purity-config>

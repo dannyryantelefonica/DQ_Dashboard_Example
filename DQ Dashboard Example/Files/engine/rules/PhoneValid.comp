@@ -1,0 +1,149 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<purity-config version="10.5.0.ga-2016-06-24">
+	<references/>
+	<component-mappings>
+		<propertyMappings/>
+	</component-mappings>
+
+<!-- (Component) --><component id="Component" disabled="false" mode="NORMAL">
+		<properties fileName="components/na_validate_phone.comp">
+			<mappings>
+				<mappingEndPoint name="in">
+					<columnMappings>
+						<columnsMapping to="src_phone" from="src_phone"/>
+					</columnMappings>
+				</mappingEndPoint>
+				<mappingEndPoint name="out">
+					<columnMappings>
+						<columnsMapping to="out_international_prefix"/>
+						<columnsMapping to="out_area_code"/>
+						<columnsMapping to="out_exchange_designation"/>
+						<columnsMapping to="out_local_number"/>
+						<columnsMapping to="out_extension_number"/>
+						<columnsMapping to="std_phone"/>
+						<columnsMapping to="score_phone"/>
+						<columnsMapping to="exp_phone" from="result"/>
+						<columnsMapping to="lbl_phone"/>
+					</columnMappings>
+				</mappingEndPoint>
+			</mappings>
+			<parameters/>
+		</properties>
+		<visual-constraints bounds="24,120,-1,-1" layout="vertical"/>
+	</component>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Component" endpoint="out"/>
+		<target step="transform explanation" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (in) --><step id="in" className="com.ataccama.dqc.tasks.common.usersteps.io.InputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<columns>
+				<columnDef name="src_phone" type="STRING"/>
+			</columns>
+			<shadowColumns>
+				<shadowColumnDef name="result" type="STRING"/>
+			</shadowColumns>
+		</properties>
+		<visual-constraints bounds="24,0,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="in" endpoint="out"/>
+		<target step="Component" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (out) --><step id="out" className="com.ataccama.dqc.tasks.common.usersteps.io.OutputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<requiredColumns>
+				<requiredColumn name="result" type="STRING"/>
+			</requiredColumns>
+		</properties>
+		<visual-constraints bounds="24,312,-1,-1" layout="vertical"/>
+	</step>
+
+
+
+<!-- (transform explanation) --><step id="transform explanation" className="com.ataccama.dqc.tasks.expressions.ColumnAssigner" disabled="false" mode="NORMAL">
+		<properties>
+			<assignments>
+				<assignment column="result">
+					<expression>case(
+indexOf(result,&#39;PHONE_VALID&#39;) is 0 or result is null,
+&#39;VALID&#39;,
+
+src_phone is null,
+&#39;NULL&#39;,
+
+indexOf(result,&#39;PHONE_VALID&#39;) is 0
+and
+matches(@&quot;(.)\1{6}&quot;,right(trashNonDigits(src_phone),7)),
+&#39;DEFAULT&#39;,
+
+indexOf(result, &#39;PHONE_UNPARSABLE&#39;) is not null,
+&#39;INVALID_CHARS&#39;,
+
+indexOf(result,&#39;PHONE_INVALID&#39;) is 0
+and
+length(trashNonDigits(src_phone)) &lt; 10,
+&#39;SHORT&#39;,
+
+indexOf(result,&#39;PHONE_INVALID_AREA_CODE&#39;) is not null,
+&#39;INVALID_AREA_CODE&#39;,
+
+indexOf(result,&#39;PHONE_INVALID&#39;) is 0
+and
+length(trashNonDigits(src_phone)) &gt; 11,
+&#39;LONG&#39;
+
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+			</assignments>
+		</properties>
+		<visual-constraints bounds="24,216,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="transform explanation" endpoint="out"/>
+		<target step="out" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<modelComment bounds="264,24,385,169" borderColor="183,183,0" backgroundColor="255,255,180" foregroundColor="51,51,51">
+Rule name: Phone Validity
+Rule description: Phone number must be valid US or Canadian phone number.
+Both international (i.e. 001 or +1) prefixes are allowed as well as no prefix.
+The number must consists of 10 digits, with the first 3 digits being valid area code from a list-of-values. The only additional characters
+allowed are rounded brackets &#39;(&#39; &#39;)&#39; and dash &#39;-&#39;.
+
+Cases of 7 repeated digits after the area code are considered default values entered either by a user or ETL process.
+
+Expected values in output &#39;result&#39; attribute:
+
+	VALID
+	NULL (The value is empty.)
+	DEFAULT (Phone number consists of repeated characters only (i.e. 203 111-1111))
+	INVALID_CHARS (Phone number contain invalid characters (letters))
+	SHORT (Phone number is shorter then 10 digits)
+	INVALID_AREA_CODE (Area code is invalid)
+	LONG (Phone number contains more then 10 digits (even after internation prefix separation))
+	</modelComment>
+
+</purity-config>

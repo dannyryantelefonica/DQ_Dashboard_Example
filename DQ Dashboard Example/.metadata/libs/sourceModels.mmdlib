@@ -1,0 +1,332 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<metametadata-library>
+	<imports>
+		<import file="libs/logical.mmdlib" prefix="logical"/>
+	</imports>
+	
+		<nodes>
+		
+
+	<node id="dimensionWrapper" icon="icons/funnel.png" sortChildren="false" name="dimensionWrapper" label="Filters" expanded="false">
+      <subNodes>
+        
+      
+      
+      
+      <subNode min="0" id="dimensionNode" max="-1"/>
+			</subNodes>
+       <validations>
+      <validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  		<selectPath>dimensionNode/@id</selectPath>
+  		<message>&#39;{.}&#39; is not unique value for attribute &#39;ID&#39;</message>
+	</validation>
+	</validations>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+    <description>List of filters, which filter out data quality results by defined attributes.</description>
+		</node>
+
+    <node id="dimensionNode" icon="icons/funnel.png" name="dimensionNode" label="{@name}" expanded="false">
+    <subNodes>
+    	
+    
+      
+      
+      
+      
+      
+      
+				
+			
+			
+			
+			<subNode min="1" id="ccDimensionNode" max="1"/>
+			</subNodes>
+      <attributes>
+        <attribute name="name" label="Name" type="string" required="true">
+					<description>Name of the filter.</description>
+				</attribute>
+      <attribute name="column" label="Column" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+				<selectPath>ancestor::modelNode/lMRoot/lMTableWrapper/lMTableNode[centralEntityNode/@centralEntity=&#39;true&#39;]/lMAttributeWrapper/lMAttributeNode</selectPath>
+				<labelTemplate>{ancestor::modelNode/@name}.{ancestor::lMTableNode/@name}.{@name}</labelTemplate>
+				<valueTemplate>{ancestor::modelNode/@code}.{ancestor::lMTableNode/@name}.{@name}</valueTemplate>
+			</valuesProvider>
+				<description>The name of an attribute that will act as a filter.</description>
+				</attribute>
+			</attributes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+      <validations>
+      	    <validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  				<selectPath>../dimensionNode/@name</selectPath>
+  				<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+			</validation>
+      </validations>
+    </node>
+    
+    
+
+    
+	
+	<node id="ccDimensionNode" visible="false" generated="true" name="cc" label="{@name}" expanded="true">
+    <subNodes/>
+      <attributes>
+        <attribute name="modelName" type="string"/>
+        <attribute name="tableName" type="string"/>
+        <attribute name="columnName" type="string"/>
+	</attributes>
+    </node>
+	
+    <node id="modelWrapper" sortChildren="false" name="modelWrapper" label="Models" expanded="true">
+      <subNodes>
+        
+      
+      
+			<subNode min="0" id="modelNode" max="-1"/>
+			</subNodes>
+    </node>
+
+    <node id="modelNode" icon="icons/data.png" sortChildren="false" name="modelNode" label="{@name}">
+      <attributes>
+        <attribute name="code" label="ID" type="string" required="true">
+					
+				
+				<description>Technical name of the internal identifier of the source system model.</description>
+				</attribute>
+				<attribute name="name" label="Name" type="string" required="true">
+					
+				
+				<description>Model&#39;s name used to distinguish it from other models in current Source system.</description>
+				</attribute>
+      
+			<attribute name="description" label="Description" type="text">
+					<description>Space for optional details about the source system model.</description>
+				</attribute>
+			</attributes>
+      <subNodes>
+				
+				
+				
+			
+				
+				
+			
+				
+				
+			
+				
+				
+			<subNode min="1" id="entityRoot" max="1"/>
+				<subNode min="1" id="dimensionWrapper" max="1"/>
+				<subNode min="1" id="logical.lMRoot" max="1"/>
+			</subNodes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      	<editor class="com.ataccama.ame.core.editors.DeleteChild" label="Delete Model"/>
+      <editor class="com.ataccama.ame.core.editors.FileOpener" label="Open Load component" fileNameTemplate="Files/engine/load/{../../@code}_{@code}.comp"/>
+			</editors>
+            <validations>
+      	<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../modelNode/@code</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for model attribute &#39;code&#39;</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@name</selectPath>
+  			<valueExpr>[a-zA-Z_0-9 ]+</valueExpr>
+  			<message>model name contains not allowed characters</message>
+		</validation>
+      
+      </validations>
+    <generators>
+				<gen source="." class="com.ataccama.ame.core.generators.XsltPlanFileGenerator" templatePath="xslt/gen_load_plan.xsl" fileNameTemplate="Files/engine/load/{../../@code}_{@code}.comp">
+	<!--<parameters>
+		<param source="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode/modelWrapper/modelNode/lMRoot" name="lMRoot"/>
+	</parameters>-->
+</gen>
+			</generators>
+		</node>
+
+        
+  <node id="entityRoot" icon="icons/branch.png" sortChildren="false" name="entityRoot" label="Business Entities ({@name})" expanded="false">
+      <attributes>
+        <attribute name="code" label="Entity ID" type="string" required="true">
+					<description>Technical name of the entity internal identifier. Not visible in the DQD web application frontend.</description>
+				</attribute>
+				<attribute name="name" label="Entity Name" type="string" required="true">
+					<description>Business name of the entity as shown in the DQD web application (in the left menu hierarchy).</description>
+				</attribute>
+      
+			</attributes>
+    <subNodes>
+        
+        
+      
+				
+			
+				
+			
+				
+			
+				
+			<subNode min="1" id="entityContainerWrapper" max="1"/>
+				<subNode min="1" id="entityAttributeWrapper" max="1"/>
+			</subNodes>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+      <validations>
+      	<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+			<selectPath>.//entityAttributeNode/@code</selectPath>
+			<message>Rule &#39;{.}&#39; is not uniquely assigned to a Business Entity</message>
+		</validation>
+      	<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+			<selectPath>.//entityContainer/@code|@code</selectPath>
+			<message>&#39;{.}&#39; is not unique Business Entity name for {ancestor::modelNode/@name}</message>
+		</validation>
+      	<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../entityRoot/@code</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>.//entityAttributeWrapper/entityAttributeNode[@name] | .//entityContainerWrapper/entityContainer[@name]</expression>
+           <message>At least one rule or entity must exist</message>
+        </validation>	
+	
+        <validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>.[count(./entityContainerWrapper/entityContainer[1])=0 or count(./entityAttributeWrapper/entityAttributeNode[1])=0 ]</expression>
+           <message>Business entity can contain Constituent Rules only or Sub-Entities only, not both.</message>
+       </validation>	
+      </validations>
+    <description>List of business entities, where rules are aggregated.</description>
+		</node>
+    
+    
+  
+    
+  <node id="entityAttributeWrapper" sortChildren="false" name="entityAttributeWrapper" label="Constituent Rules" expanded="true">
+      <subNodes>
+        
+      
+      
+      
+      
+			<subNode min="0" id="entityAttributeNode" max="-1"/>
+			</subNodes>
+    <description>List of rule instances assigned to the Business Entity rule set of the given source system model.</description>
+		</node>
+    
+    <node id="entityAttributeNode" icon="icons/note.png" sortChildren="false" name="entityAttributeNode" label="{@name}">
+      <attributes>
+        <attribute name="name" label="Rule Name" type="list" required="true">
+
+				
+				
+				<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider" fillColumns="true">
+	<selectPath>
+	ancestor::modelNode/lMRoot/lMTableWrapper/lMTableNode[centralEntityNode/@centralEntity=&#39;true&#39;]/lMAttributeWrapper/lMAttributeNode[cc/@hasRule=&#39;true&#39;]|
+	ancestor::modelNode/lMRoot/lMTableWrapper/lMTableNode[centralEntityNode/@centralEntity=&#39;true&#39;]/lMAttributeCollContainerWrapper/lMAttributeCollContainerOneEntity |
+	ancestor::modelNode/lMRoot/lMTableWrapper/lMTableNode[centralEntityNode/@centralEntity=&#39;true&#39;]/lMAttributeCollContainerWrapper/lMAttributeCollContainerMultiEntityParent
+	</selectPath>
+	<labelTemplate>{ancestor::lMTableNode/@name}.{cc/@col}: {cc/@ruleCode}</labelTemplate>
+	<valueTemplate>{ancestor::lMTableNode/@name}.{cc/@col}: {cc/@ruleCode}</valueTemplate>
+</valuesProvider>
+				<description>The name of the rule instance assigned to the Business Entity for the given Source System model.</description>
+				</attribute>
+      
+      </attributes>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+    <subNodes>
+      
+      
+			
+			
+			
+			
+			<subNode min="1" id="ccEntityAttributeInfo" max="1"/>
+			</subNodes>
+      <validations>
+      	<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../entityAttributeNode/@name</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+		</validation>
+      </validations>
+    </node>
+    
+    <node id="entityContainer" icon="icons/branch.png" sortChildren="false" name="entityContainer" label="{@name}">
+      <subNodes>
+      
+        
+      
+			
+				
+				
+			
+				
+				
+			<subNode min="1" id="entityAttributeWrapper" max="1"/>
+				<subNode min="1" id="entityContainerWrapper" max="1"/>
+				<subNode min="1" id="ccAggregation" max="1"/>
+			</subNodes>
+    <attributes>
+        <attribute name="name" label="Entity Name" type="string" required="true">
+					
+				<description>Name of the business entity, in which the source system is broken to. It could consist of any number of sub-entities as well as the rules.</description>
+				</attribute>
+      </attributes>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+      <validations>
+      	<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>.//entityAttributeNode/@name</expression>
+           <message>Entity contains no rules</message>
+        </validation>
+        <validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+			<selectPath>../entityContainer/@name</selectPath>
+			<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+			</validation>
+        <validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>.[count(./entityContainerWrapper/entityContainer[1])=0 or count(./entityAttributeWrapper/entityAttributeNode[1])=0 ]</expression>
+           <message>Business entity can contain Constituent Rules only or Sub-Entities only, not both.</message>
+       </validation>	
+      </validations>
+    </node>
+    
+  <node id="entityContainerWrapper" sortChildren="false" name="entityContainerWrapper" label="Sub-Entities" expanded="true">
+      <subNodes>
+        
+      
+      
+      <subNode min="0" id="entityContainer" max="-1"/>
+			</subNodes>
+    <description>List of subentities.</description>
+		</node>
+    
+
+    
+  <node id="ccEntityAttributeInfo" sortChildren="false" visible="false" generated="true" name="cc">
+      <attributes>
+        <attribute name="tableName" type="string"/>
+        <attribute visible="true" name="attributeName" type="string"/>
+      <attribute name="ruleCode" type="string"/>
+      </attributes>
+    </node>
+  
+  
+
+	<node id="ccAggregation" visible="false" generated="true" name="ccAggregation" expanded="false">
+			<attributes>
+				<attribute name="aggregationCode" type="string"/>
+			</attributes>
+		</node>
+	
+	
+	
+	</nodes>
+	
+</metametadata-library>

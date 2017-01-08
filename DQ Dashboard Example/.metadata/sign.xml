@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<signingInfo>
+   <signedFiles>
+      <file name="meta.mmd" signature="jIsu26Bs4PKxKULs5jHZ4KvXLmD0ApQQUIfz/CmwXB9timjO/MV1kLo5tA8krQ0wcrOa+vLNYaHCmiHvjXV7Uw=="></file>
+      <file name="manifest.xml" signature="FoyEP4CIGNOROaXZJEeDzNndHip1BFGC0Q3jI8oQPazAM0HSAiMblnqLTu5pNDJNEzJKyhOcgh83EljvchhNeg=="></file>
+      <file name="libs/sourceModels.mmdlib" signature="Ln4lczcjrbhVhadQnHfZRmx+5VZOidhpn8irp1gyE9YFzd2lN+Q6pcPYAGj4AlC1UOSfV/owN6FvnUWNAznOvQ=="></file>
+      <file name="libs/rules.mmdlib" signature="m4FKg+Jk9WtJNL36Yu/J3/KfwCvASdJxmgZhVccVNV1Gge0cxKVfuDAq2dANhT7qap0dhfX46/VOaE4ZjSG23g=="></file>
+      <file name="libs/masterEntities.mmdlib" signature="Cy0/1+TPEprj0VbQFGsrXiv7xUgD+bNgSoPGwSuue1MJ1iiO9T4G33TCq0qV8HG/PayBmkCem+RY5vuu64i/ZQ=="></file>
+      <file name="libs/logical.mmdlib" signature="D0aH/Fj2o0Hv5x1UeHDUapmZWCTppqugF0Z4KqpstXWmQgQ0U8jlHXnxSOj8vMj5jH9wtXl+V3zdCAmyIhmKdw=="></file>
+      <file name="libs/dqDimensions.mmdlib" signature="K/G8f6RV3WD8STw+XjmL6qHSg6J63YXoLWtbaB/5G7x3rJ5m6dNS/Q1FGAuQ20AvJpdo92zB68K8uUXQKNRbyA=="></file>
+      <file name="libs/dbConnections.mmdlib" signature="geHCzR2xKq+2snKOcdq+2uaGXTHBd+SATZUW0WBFNjapUxuwMCuxw5emL0KF8wimQVQp/sDQc/Eo97+VDDgkwQ=="></file>
+   </signedFiles>
+</signingInfo>

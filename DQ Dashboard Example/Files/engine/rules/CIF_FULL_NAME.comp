@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<purity-config version="10.5.0.ga-2016-06-24">
+	<references/>
+	<component-mappings>
+		<propertyMappings/>
+	</component-mappings>
+
+<!-- (Add sco) --><step id="Add sco" className="com.ataccama.dqc.tasks.flow.AlterFormat" disabled="false" mode="NORMAL">
+		<properties>
+			<addedColumns>
+				<addedColumn name="sco" type="INTEGER"/>
+			</addedColumns>
+			<removedColumns/>
+		</properties>
+		<visual-constraints bounds="24,96,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Add sco" endpoint="out"/>
+		<target step="Evaluate customer" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Evaluate customer) --><step id="Evaluate customer" className="com.ataccama.dqc.tasks.scoring.SimpleScoring" disabled="false" mode="NORMAL">
+		<properties defaultScoreColumn="sco" defaultExplainColumn="result">
+			<scoringCases>
+				<scoringCase description="VALID" explanation="&#39;VALID&#39;" score="100">
+					<condition>//Code the rule here
+matches(@&quot;[a-zA-Z_&#39;\.\s-]+&quot;,src_first_name)
+and
+matches(@&quot;[a-zA-Z_&#39;\.\s-]+&quot;,src_last_name)</condition>
+				</scoringCase>
+				<scoringCase description="NULL" explanation="&#39;NULL&#39;" score="100">
+					<condition>//Code the rule here
+src_first_name is null
+and
+src_last_name is null</condition>
+				</scoringCase>
+				<scoringCase description="FN_INITIAL" explanation="&#39;FN_INITIAL&#39;" score="100">
+					<condition>//Code the rule here
+length(trashNonLetters(src_first_name)) is 1</condition>
+				</scoringCase>
+				<scoringCase description="FN_NULL" explanation="&#39;FN_NULL&#39;" score="100">
+					<condition>//Code the rule here
+src_first_name is null</condition>
+				</scoringCase>
+			</scoringCases>
+		</properties>
+		<visual-constraints bounds="24,192,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Evaluate customer" endpoint="out"/>
+		<target step="out" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (in) --><step id="in" className="com.ataccama.dqc.tasks.common.usersteps.io.InputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<columns>
+				<column name="src_first_name" type="string"/>
+				<column name="src_last_name" type="string"/>
+			</columns>
+			<shadowColumns>
+				<shadowColumnDef name="result" type="STRING"/>
+			</shadowColumns>
+		</properties>
+		<visual-constraints bounds="24,0,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="in" endpoint="out"/>
+		<target step="Add sco" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (out) --><step id="out" className="com.ataccama.dqc.tasks.common.usersteps.io.OutputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<requiredColumns>
+				<requiredColumns name="result" type="STRING"/>
+			</requiredColumns>
+		</properties>
+		<visual-constraints bounds="24,288,-1,-1" layout="vertical"/>
+	</step>
+
+
+
+<modelComment bounds="264,24,385,169" borderColor="183,183,0" backgroundColor="255,255,180" foregroundColor="51,51,51">
+Rule name: Full Name
+Rule description: First name is a free form entry, mandatory, field. May be composed of letters (A-Z including French accented characters), apostrophes, hyphens, periods, slashes and spaces. 
+Last name is a free form entry, mandatory, field. May be composed of letters, apostrophes, hyphens, periods, slashes and spaces. 
+
+Expected values in output &#39;result&#39; attribute:
+
+	VALID
+	NULL (Both first name and last name are null.)
+	FN_INITIAL (First name has initial only (i.e. &#39;J.&#39;))
+	FN_NULL (First name is null)
+	</modelComment>
+
+</purity-config>

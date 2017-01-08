@@ -1,0 +1,77 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<purity-config version="10.5.0.ga-2016-06-24">
+	<references/>
+	<component-mappings>
+		<propertyMappings/>
+	</component-mappings>
+
+<!-- (Customer type lookup) --><step id="Customer type lookup" className="com.ataccama.dqc.tasks.clean.LookupAlgorithm" disabled="false" mode="NORMAL">
+		<properties maxDifference="0" tableFileName="../../data/ext/lkp/cust_type.lkp" prefix="false" foreignKeyColumn="src_customer_type">
+			<columns/>
+			<scorer explanationColumn="result">
+				<scoringEntries>
+					<scoringEntry score="0" explainAs="NULL" explain="true" key="LKP_NULL_ID"/>
+					<scoringEntry score="0" explainAs="INVALID" explain="true" key="LKP_NOT_FOUND"/>
+					<scoringEntry score="0" explainAs="VALID" explain="true" key="LKP_FOUND"/>
+					<scoringEntry score="0" explainAs="LKP_FOUND_DUPL" explain="false" key="LKP_FOUND_DUPL"/>
+					<scoringEntry score="0" explainAs="LKP_APPROX_USED" explain="false" key="LKP_APPROX_USED"/>
+				</scoringEntries>
+			</scorer>
+			<selectBestMatch/>
+		</properties>
+		<visual-constraints bounds="96,240,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Customer type lookup" endpoint="out"/>
+		<target step="out" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (in) --><step id="in" className="com.ataccama.dqc.tasks.common.usersteps.io.InputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<columns>
+				<column name="src_customer_type" type="string"/>
+			</columns>
+			<shadowColumns>
+				<shadowColumnDef name="result" type="STRING"/>
+			</shadowColumns>
+		</properties>
+		<visual-constraints bounds="96,144,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="in" endpoint="out"/>
+		<target step="Customer type lookup" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (out) --><step id="out" className="com.ataccama.dqc.tasks.common.usersteps.io.OutputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<requiredColumns>
+				<requiredColumns name="result" type="STRING"/>
+			</requiredColumns>
+		</properties>
+		<visual-constraints bounds="96,336,-1,-1" layout="vertical"/>
+	</step>
+
+
+
+<modelComment bounds="264,24,385,169" borderColor="183,183,0" backgroundColor="255,255,180" foregroundColor="51,51,51">
+Rule name: Customer Type
+Rule description: Customer type is mandatory attribute with allowed fields &#39;A&#39; (Active), &#39;P&#39; (Prospect), &#39;C&#39; (Closed) as defined in reference file CSTMR_TYPE_2015_01.doc
+
+Expected values in output &#39;result&#39; attribute:
+
+	VALID
+	NULL (The value is empty.)
+	INVALID (The value is outside of the allowed values.)
+	</modelComment>
+
+</purity-config>

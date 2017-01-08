@@ -1,0 +1,352 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<purity-config xmlns:comm="http://www.ataccama.com/purity/comment" version="10.5.0.ga-2016-06-24">
+	<references/>
+	<component-mappings>
+		<propertyMappings/>
+	</component-mappings>
+
+<!-- (Add expl columns) --><step id="Add expl columns" className="com.ataccama.dqc.tasks.flow.AlterFormat" disabled="false" mode="NORMAL">
+		<properties>
+			<addedColumns>
+				<addedColumn name="exp_FULL_NM" type="STRING"/>
+				<addedColumn name="exp_GNDR" type="STRING"/>
+				<addedColumn name="exp_PHONE" type="STRING"/>
+				<addedColumn name="exp_EMAIL" type="STRING"/>
+				<addedColumn name="exp_CSTMR_TYPE" type="STRING"/>
+			</addedColumns>
+			<removedColumns/>
+		</properties>
+		<visual-constraints bounds="480,144,48,48" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Add expl columns" endpoint="out"/>
+		<target step="Validate_email" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Assign VALID) --><step id="Assign VALID" className="com.ataccama.dqc.tasks.expressions.ColumnAssigner" disabled="false" mode="NORMAL">
+		<properties>
+			<assignments>
+				<assignment column="exp_CSTMR_TYPE">
+					<expression>iif(exp_CSTMR_TYPE
+	is null,
+	&#39;VALID&#39;,
+	exp_CSTMR_TYPE
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="exp_EMAIL">
+					<expression>iif(exp_EMAIL
+	is null,
+	&#39;VALID&#39;,
+	exp_EMAIL
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="exp_FULL_NM">
+					<expression>iif(exp_FULL_NM
+	is null,
+	&#39;VALID&#39;,
+	exp_FULL_NM
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="exp_GNDR">
+					<expression>iif(exp_GNDR
+	is null,
+	&#39;VALID&#39;,
+	exp_GNDR
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="exp_PHONE">
+					<expression>iif(exp_PHONE
+	is null,
+	&#39;VALID&#39;,
+	exp_PHONE
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+			</assignments>
+		</properties>
+		<visual-constraints bounds="480,888,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Assign VALID" endpoint="out"/>
+		<target step="Multiplicator" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Component) --><component id="Component" disabled="false" mode="NORMAL">
+		<properties fileName="../../engine/rules/components/na_cleanse_name.comp">
+			<mappings>
+				<mappingEndPoint name="in">
+					<columnMappings>
+						<columnsMapping to="src_name" from="FULL_NM"/>
+					</columnMappings>
+				</mappingEndPoint>
+				<mappingEndPoint name="out">
+					<columnMappings>
+						<columnsMapping to="out_first_name"/>
+						<columnsMapping to="out_middle_name"/>
+						<columnsMapping to="out_last_name"/>
+						<columnsMapping to="std_title"/>
+						<columnsMapping to="std_first_name"/>
+						<columnsMapping to="std_middle_name"/>
+						<columnsMapping to="std_last_name"/>
+						<columnsMapping to="pat_full_name"/>
+						<columnsMapping to="score_name"/>
+						<columnsMapping to="exp_name" from="exp_FULL_NM"/>
+					</columnMappings>
+				</mappingEndPoint>
+			</mappings>
+			<parameters/>
+		</properties>
+		<visual-constraints bounds="480,576,-1,-1" layout="vertical"/>
+	</component>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Component" endpoint="out"/>
+		<target step="concat phone" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Component 2) --><component id="Component 2" disabled="false" mode="NORMAL">
+		<properties fileName="../../engine/rules/PhoneValid.comp">
+			<mappings>
+				<mappingEndPoint name="in">
+					<columnMappings>
+						<columnsMapping to="src_phone" from="tmp_full_phone"/>
+					</columnMappings>
+				</mappingEndPoint>
+				<mappingEndPoint name="out">
+					<columnMappings>
+						<columnsMapping to="result" from="exp_PHONE"/>
+					</columnMappings>
+				</mappingEndPoint>
+			</mappings>
+			<parameters/>
+		</properties>
+		<visual-constraints bounds="480,768,-1,-1" layout="vertical"/>
+	</component>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Component 2" endpoint="out"/>
+		<target step="Assign VALID" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Customer type lookup) --><step id="Customer type lookup" className="com.ataccama.dqc.tasks.clean.LookupAlgorithm" disabled="false" mode="NORMAL">
+		<properties maxDifference="0" tableFileName="../ext/lkp/cust_type.lkp" prefix="false" foreignKeyColumn="CSTMR_TYPE">
+			<columns/>
+			<scorer explanationColumn="exp_CSTMR_TYPE">
+				<scoringEntries>
+					<scoringEntry score="0" explainAs="NULL" explain="true" key="LKP_NULL_ID"/>
+					<scoringEntry score="0" explainAs="INVALID" explain="true" key="LKP_NOT_FOUND"/>
+					<scoringEntry score="0" explainAs="VALID" explain="false" key="LKP_FOUND"/>
+					<scoringEntry score="0" explainAs="LKP_FOUND_DUPL" explain="false" key="LKP_FOUND_DUPL"/>
+					<scoringEntry score="0" explainAs="LKP_APPROX_USED" explain="false" key="LKP_APPROX_USED"/>
+				</scoringEntries>
+			</scorer>
+			<selectBestMatch/>
+		</properties>
+		<visual-constraints bounds="480,360,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Customer type lookup" endpoint="out"/>
+		<target step="Gender code" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Gender code) --><step id="Gender code" className="com.ataccama.dqc.tasks.expressions.ColumnAssigner" disabled="false" mode="NORMAL">
+		<properties>
+			<assignments>
+				<assignment column="exp_GNDR">
+					<expression>case(
+GNDR is null, &#39;NULL&#39;,
+GNDR is not in {&#39;0&#39;,&#39;1&#39;}, &#39;OUT_OF_DOMAIN&#39;,
+&#39;&#39;)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+			</assignments>
+		</properties>
+		<visual-constraints bounds="480,456,48,48" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Gender code" endpoint="out"/>
+		<target step="Component" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Multiplicator) --><step id="Multiplicator" className="com.ataccama.dqc.tasks.flow.Multiplicator" disabled="false" mode="NORMAL">
+		<properties/>
+		<visual-constraints bounds="480,1008,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Multiplicator" endpoint="out"/>
+		<target step="marketing_CRM_evaluated.csv" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Multiplicator" endpoint="out"/>
+		<target step="out" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Validate_email) --><step id="Validate_email" className="com.ataccama.dqc.tasks.clean.ValidateEmailAlgorithm" disabled="false" mode="NORMAL">
+		<properties tldLookupFileName="../ext/lkp/___email_tld.lkp" in="EMAIL">
+			<scorer explanationColumn="exp_EMAIL">
+				<scoringEntries>
+					<scoringEntry score="10000000" explainAs="EMAIL_EMPTY" explain="true" key="EML_NULL"/>
+					<scoringEntry score="10000" explainAs="EMAIL_INVALID" explain="true" key="EML_ADDRESS"/>
+					<scoringEntry score="10000" explainAs="EMAIL_INVALID" explain="true" key="EML_TLD"/>
+					<scoringEntry score="10000" explainAs="EMAIL_AMBIGUOUS_DOMAIN" explain="true" key="EML_AMBIGUOUS_DOMAIN"/>
+				</scoringEntries>
+			</scorer>
+			<comm:comment>Validate email</comm:comment>
+		</properties>
+		<visual-constraints bounds="480,240,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Validate_email" endpoint="out"/>
+		<target step="Customer type lookup" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (concat phone) --><step id="concat phone" className="com.ataccama.dqc.tasks.flow.AlterFormat" disabled="false" mode="NORMAL">
+		<properties>
+			<addedColumns>
+				<addedColumn expression="PHONE_AREA_CD + &#39; &#39; + PHONE_NMBR" name="tmp_full_phone" type="STRING"/>
+			</addedColumns>
+			<removedColumns/>
+		</properties>
+		<visual-constraints bounds="480,672,48,48" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="concat phone" endpoint="out"/>
+		<target step="Component 2" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (marketing_CRM_evaluated.csv) --><step id="marketing_CRM_evaluated.csv" className="com.ataccama.dqc.tasks.io.text.write.TextFileWriter" disabled="false" mode="NORMAL">
+		<properties useStringQualifierOnAllColumns="false" stringQualifier="&quot;" lineSeparator="\r\n" fieldSeparator=";" generateMetadata="true" fileName="./marketing_CRM_evaluated.csv" encoding="UTF-8" writeHeader="true" writeAllColumns="true" compression="NONE" stringQualifierEscape="&quot;">
+			<columns/>
+			<dataFormatParameters trueValue="true" falseValue="false" thousandsSeparator="" dateFormatLocale="en_US" dateTimeFormat="yyyy-MM-dd HH:mm:ss" decimalSeparator="." dayFormat="yyyy-MM-dd"/>
+		</properties>
+		<visual-constraints bounds="336,1104,-1,-1" layout="vertical"/>
+	</step>
+
+
+
+<!-- (marketing_CRM_source) --><step id="marketing_CRM_source" className="com.ataccama.dqc.tasks.io.text.read.TextFileReader" disabled="false" mode="NORMAL">
+		<properties stringQualifier="&quot;" lineSeparator="\r\n" fieldSeparator=";" lineMaxReadLength="65536" numberOfLinesInHeader="1" fileName="marketing_CRM_source.csv" encoding="ISO-8859-1" numberOfLinesInFooter="0" compression="NONE" stringQualifierEscape="&quot;">
+			<columns>
+				<textReaderColumn name="ID" type="INTEGER" ignore="false">
+					<dataFormatParameters thousandsSeparator="" decimalSeparator="."/>
+				</textReaderColumn>
+				<textReaderColumn name="CSTMR_TYPE" type="STRING" ignore="false"/>
+				<textReaderColumn name="FULL_NM" type="STRING" ignore="false"/>
+				<textReaderColumn name="GNDR" type="STRING" ignore="false"/>
+				<textReaderColumn name="PHONE_AREA_CD" type="STRING" ignore="false"/>
+				<textReaderColumn name="PHONE_NMBR" type="STRING" ignore="false"/>
+				<textReaderColumn name="EMAIL" type="STRING" ignore="false"/>
+			</columns>
+			<dataFormatParameters trueValue="true" falseValue="false" thousandsSeparator="" dateFormatLocale="en_US" dateTimeFormat="yy-MM-dd HH:mm:ss" decimalSeparator="." dayFormat="yy-MM-dd"/>
+			<errorHandlingStrategy rejectFileName="rejected.txt">
+				<errorInstructions>
+					<errorInstruction putToLog="true" errorType="EXTRA_DATA" dataStrategy="READ_POSSIBLE" putToReject="false"/>
+					<errorInstruction putToLog="true" errorType="LONG_LINE" dataStrategy="STOP" putToReject="true"/>
+					<errorInstruction putToLog="true" errorType="PROCESSING_ERROR" dataStrategy="STOP" putToReject="false"/>
+					<errorInstruction putToLog="true" errorType="INVALID_DATE" dataStrategy="READ_POSSIBLE" putToReject="false"/>
+					<errorInstruction putToLog="true" errorType="SHORT_LINE" dataStrategy="READ_POSSIBLE" putToReject="true"/>
+					<errorInstruction putToLog="true" errorType="UNPARSABLE_FIELD" dataStrategy="NULL_VALUE" putToReject="false"/>
+				</errorInstructions>
+			</errorHandlingStrategy>
+			<shadowColumns/>
+		</properties>
+		<visual-constraints bounds="480,48,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="marketing_CRM_source" endpoint="out"/>
+		<target step="Add expl columns" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (out) --><step id="out" className="com.ataccama.dqc.tasks.common.usersteps.io.OutputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<requiredColumns/>
+		</properties>
+		<visual-constraints bounds="480,1104,-1,-1" layout="vertical"/>
+	</step>
+
+
+
+<modelComment bounds="48,24,265,145" borderColor="183,183,0" backgroundColor="255,255,180" foregroundColor="51,51,51">This plan validates attributes in Marketing source. 
+Output of this plan is used as input for DQD that 
+is reusing already evaluated rules</modelComment>
+
+</purity-config>

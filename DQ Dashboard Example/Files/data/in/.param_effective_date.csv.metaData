@@ -1,0 +1,10 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<settings>
+  <connector>
+    <saved-state stringQualifier="" lineWithColumnNames="1" recordLength="-1" ignoredRowRegEx="" escapeSequence="" fixedSizes="false" fieldSeparator=";" stringQualifierEscapeSequence="" numberOfLinesInHeader="1" recordSeparator="\r\n" encoding="ISO-8859-1" numberOfLinesInFooter="0">
+      <columns>
+        <textColumnMetaData maxDecimalPlaces="0" dataType="DATETIME" dateFormatLocale="en_US" name="date" maxWidth="-1" columnWidth="0" booleanTrueValue="1" useInReaderOut="true" dateFormat="yyyy-MM-dd HH:mm:ss" numberGroupSeparator="" decimalSeparator="." booleanFalseValue="0"/>
+      </columns>
+    </saved-state>
+  </connector>
+</settings>

@@ -1,0 +1,1031 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<purity-config version="10.5.0.ga-2016-06-24">
+	<component-id>usa</component-id>
+	<references/>
+	<component-mappings>
+		<propertyMappings/>
+	</component-mappings>
+
+<!-- (Add calculation/output columns) --><step id="Add calculation/output columns" className="com.ataccama.dqc.tasks.flow.AlterFormat" disabled="false" mode="NORMAL">
+		<properties>
+			<addedColumns>
+				<addedColumn name="out_international_prefix" type="STRING"/>
+				<addedColumn name="out_area_code" type="STRING"/>
+				<addedColumn name="out_exchange_designation" type="STRING"/>
+				<addedColumn name="out_local_number" type="STRING"/>
+				<addedColumn name="out_extension_number" type="STRING"/>
+				<addedColumn expression="src_phone" name="pur_phone" type="STRING"/>
+				<addedColumn name="pur_exchange_local" type="STRING"/>
+				<addedColumn name="pur_area_exchange" type="STRING"/>
+				<addedColumn name="pur_int_prefix_area" type="STRING"/>
+				<addedColumn name="pur_int_prefix_area_exchange" type="STRING"/>
+				<addedColumn name="pur_area_exchange_local" type="STRING"/>
+				<addedColumn name="note" type="STRING"/>
+				<addedColumn name="std_phone" type="STRING"/>
+				<addedColumn name="score_phone" type="INTEGER"/>
+				<addedColumn name="exp_phone" type="STRING"/>
+				<addedColumn name="lbl_phone" type="STRING"/>
+				<addedColumn name="pat_phone" type="STRING"/>
+			</addedColumns>
+			<removedColumns/>
+		</properties>
+		<visual-constraints bounds="240,96,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Add calculation/output columns" endpoint="out"/>
+		<target step="Regex Matching for extension" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Lookup USA/CAN area codes) --><step id="Lookup USA/CAN area codes" className="com.ataccama.dqc.tasks.clean.LookupAlgorithm" disabled="false" mode="NORMAL">
+		<properties maxDifference="1" tableFileName="../../../data/ext/lkp/na_phone_area_codes.lkp" prefix="false" whenCondition="out_area_code is not null" foreignKeyColumn="out_area_code">
+			<columns>
+				<columnAssign name="note">
+					<expression>iif(
+	not containsWord(exp_phone, &#39;PHONE_AREA_CODE_AMBIGUOUS&#39;),
+	lookup.note,
+	note
+)
+
+</expression>
+				</columnAssign>
+				<columnAssign name="out_area_code">
+					<expression>iif(
+	not containsWord(exp_phone, &#39;PHONE_AREA_CODE_AMBIGUOUS&#39;),
+	lookup.area_code,
+	out_area_code	
+)</expression>
+				</columnAssign>
+				<columnAssign name="exp_phone">
+					<expression>exp_phone
++
+iif(
+	note = &#39;invalid&#39;,
+	&quot; PHONE_AREA_CODE_NON_USA_CAN&quot;,
+	&#39;&#39;
+)</expression>
+				</columnAssign>
+				<columnAssign name="score_phone">
+					<expression>score_phone
++
+iif(
+	note = &#39;invalid&#39;,
+	1000,
+	0
+)
++
+iif(
+	note = &#39;non-geographic&#39;,
+	50,
+	0
+)</expression>
+				</columnAssign>
+			</columns>
+			<matchCondition>iif(
+	length(out_area_code) == 3,
+	query.relativeDifference == 0,
+	query.relativeDifference &lt;= 0.34
+)
+
+</matchCondition>
+			<scorer explanationColumn="exp_phone" scoreColumn="score_phone">
+				<scoringEntries>
+					<scoringEntry score="0" explainAs="LKP_NULL_ID" explain="false" key="LKP_NULL_ID"/>
+					<scoringEntry score="2000" explainAs="PHONE_INVALID_AREA_CODE" explain="true" key="LKP_NOT_FOUND"/>
+					<scoringEntry score="0" explainAs="LKP_FOUND" explain="false" key="LKP_FOUND"/>
+					<scoringEntry score="1100" explainAs="PHONE_AREA_CODE_AMBIGUOUS" explain="true" key="LKP_FOUND_DUPL"/>
+					<scoringEntry score="600" explainAs="PHONE_AREA_CODE_APPROX" explain="true" key="LKP_APPROX_USED"/>
+				</scoringEntries>
+			</scorer>
+			<selectBestMatch>
+				<orderBy expression="editDistance(out_area_code,lookup.area_code)" orderDescending="false" nullsFirst="false"/>
+			</selectBestMatch>
+		</properties>
+		<visual-constraints bounds="240,528,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Lookup USA/CAN area codes" endpoint="out"/>
+		<target step="Set std_phone, lbl_phone" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Parse calculation columns) --><step id="Parse calculation columns" className="com.ataccama.dqc.tasks.expressions.ColumnAssigner" disabled="false" mode="NORMAL">
+		<properties>
+			<assignments>
+				<assignment column="out_international_prefix">
+					<expression>iif(
+	pat_phone == &#39;unrecognized number&#39;
+	and
+	pur_phone is not null
+	and 
+	(
+		substr(trashNonDigits(pur_phone), 0, 1) == &#39;1&#39;
+	),
+	substr(trashNonDigits(pur_phone), 0, 1),
+	out_international_prefix	
+)
+
+//parse international prefix when found from unrecognized numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="out_international_prefix">
+					<expression>iif(
+	pat_phone == &#39;unrecognized number&#39;
+	and
+	pur_phone is not null
+	and 
+	(
+		substr(trashNonDigits(pur_phone), 0, 3) == &#39;001&#39;
+		or
+		substr(trashNonDigits(pur_phone), 0, 3) == &#39;011&#39;
+	),
+	substr(trashNonDigits(pur_phone), 0, 3),
+	out_international_prefix	
+)
+
+//parse international prefix when found from unrecognized numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="pur_area_exchange_local">
+					<expression>iif(
+	pat_phone == &#39;unrecognized number&#39;
+	and
+	pur_phone is not null
+	and 
+	(
+		substr(trashNonDigits(pur_phone), 0, 1) == &#39;1&#39;
+	),
+	substr(pur_phone, indexOf(pur_phone, &#39;1&#39;) + 1),
+	pur_area_exchange_local	
+)
+
+//parse area/exchange/local when international prefix found from unrecognized numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="pur_area_exchange_local">
+					<expression>iif(
+	pat_phone == &#39;unrecognized number&#39;
+	and
+	pur_phone is not null
+	and 
+	(
+		substr(trashNonDigits(pur_phone), 0, 3) == &#39;001&#39;
+	),
+	substr(pur_phone, indexOf(pur_phone, &#39;001&#39;) + 3),
+	pur_area_exchange_local	
+)
+
+//parse area/exchange/local when international prefix found from unrecognized numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="pur_area_exchange_local">
+					<expression>iif(
+	pat_phone == &#39;unrecognized number&#39;
+	and
+	pur_phone is not null
+	and 
+	(
+		substr(trashNonDigits(pur_phone), 0, 3) == &#39;011&#39;
+	),
+	substr(pur_phone, indexOf(pur_phone, &#39;011&#39;) + 3),
+	pur_area_exchange_local	
+)
+
+//parse area/exchange/local when international prefix found from unrecognized numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="out_area_code">
+					<expression>iif(
+	pur_area_exchange_local is not null
+	and 
+	length(trashNonDigits(pur_area_exchange_local)) == 10,
+	substr(trashNonDigits(pur_area_exchange_local), 0, 3),
+	out_area_code	
+)
+
+//parse area code from area/exchange/local numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="pur_exchange_local">
+					<expression>iif(
+	pur_area_exchange_local is not null
+	and 
+	length(trashNonDigits(pur_area_exchange_local)) == 10,
+	substr(trashNonDigits(pur_area_exchange_local), 3, 7),
+	pur_exchange_local	
+)
+
+//parse exchange/local when area code found from area/exchange/local numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="out_exchange_designation">
+					<expression>iif(
+	pur_exchange_local is not null
+	and 
+	length(trashNonDigits(pur_exchange_local)) == 7,
+	substr(trashNonDigits(pur_exchange_local), 0, 3),
+	out_exchange_designation	
+)
+
+//parse exchange designation from exchange/local numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="out_local_number">
+					<expression>iif(
+	pur_exchange_local is not null
+	and 
+	length(trashNonDigits(pur_exchange_local)) == 7,
+	substr(trashNonDigits(pur_exchange_local), 3, 4),
+	out_local_number	
+)
+
+//parse local number from exchange/local numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="out_international_prefix">
+					<expression>iif(
+	pur_int_prefix_area_exchange is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 1) == &#39;1&#39;
+	),
+	substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 1),
+	out_international_prefix	
+)
+
+//parse international prefix when found from int_prefix/area/exchange numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="out_international_prefix">
+					<expression>iif(
+	pur_int_prefix_area_exchange is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 3) == &#39;001&#39;
+		or
+		substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 3) == &#39;011&#39;
+	),
+	substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 3),
+	out_international_prefix	
+)
+
+//parse international prefix when found from int_prefix/area/exchange numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="pur_area_exchange">
+					<expression>iif(
+	pur_int_prefix_area_exchange is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 1) == &#39;1&#39;
+	),
+	substr(pur_int_prefix_area_exchange, indexOf(pur_int_prefix_area_exchange, &#39;1&#39;) + 1),
+	pur_area_exchange	
+)
+
+//parse area/exchange when international prefix found from int_prefix/area/exchange numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="pur_area_exchange">
+					<expression>iif(
+	pur_int_prefix_area_exchange is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 3) == &#39;001&#39;
+	),
+	substr(pur_int_prefix_area_exchange, indexOf(pur_int_prefix_area_exchange, &#39;001&#39;) + 3),
+	pur_area_exchange
+)
+
+//parse area/exchange when international prefix found from int_prefix/area/exchange numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="pur_area_exchange">
+					<expression>iif(
+	pur_int_prefix_area_exchange is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area_exchange), 0, 3) == &#39;011&#39;
+	),
+	substr(pur_int_prefix_area_exchange, indexOf(pur_int_prefix_area_exchange, &#39;011&#39;) + 3),
+	pur_area_exchange
+)
+
+//parse area/exchange when international prefix found from int_prefix/area/exchange numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="out_area_code">
+					<expression>iif(
+	pur_area_exchange is not null
+	and 
+	length(trashNonDigits(pur_area_exchange)) == 6,
+	substr(trashNonDigits(pur_area_exchange), 0, 3),
+	out_area_code	
+)
+
+//parse area code from area/exchange numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="out_exchange_designation">
+					<expression>iif(
+	pur_area_exchange is not null
+	and 
+	length(trashNonDigits(pur_area_exchange)) == 6,
+	substr(trashNonDigits(pur_area_exchange), 3, 3),
+	out_exchange_designation	
+)
+
+//parse exchange designation from area/exchange numbers</expression>
+					<scorer>
+						<scoringEntries/>
+					</scorer>
+				</assignment>
+				<assignment column="out_international_prefix">
+					<expression>iif(
+	pur_int_prefix_area is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area), 0, 1) == &#39;1&#39;
+	),
+	substr(trashNonDigits(pur_int_prefix_area), 0, 1),
+	out_international_prefix	
+)
+
+//parse international prefix when found from int_prefix/area numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="out_international_prefix">
+					<expression>iif(
+	pur_int_prefix_area is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area), 0, 3) == &#39;001&#39;
+		or
+		substr(trashNonDigits(pur_int_prefix_area), 0, 3) == &#39;011&#39;
+	),
+	substr(trashNonDigits(pur_int_prefix_area), 0, 3),
+	out_international_prefix
+)
+
+//parse international prefix when found from int_prefix/area numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="out_area_code">
+					<expression>iif(
+	pur_int_prefix_area is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area), 0, 1) == &#39;1&#39;
+	)
+	and 
+	(
+		length(trashNonDigits(pur_int_prefix_area)) &lt;= 5
+	),
+	substr(pur_int_prefix_area, indexOf(pur_int_prefix_area, &#39;1&#39;) + 1),
+	out_area_code	
+)
+
+//parse area code when international prefix found from int_prefix/area numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="out_area_code">
+					<expression>iif(
+	pur_int_prefix_area is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area), 0, 3) == &#39;001&#39;
+	)
+	and 
+	(
+		length(trashNonDigits(pur_int_prefix_area)) &lt;= 7
+	),
+	substr(pur_int_prefix_area, indexOf(pur_int_prefix_area, &#39;001&#39;) + 3),
+	out_area_code	
+)
+
+//parse area code when international prefix found from int_prefix/area numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="out_area_code">
+					<expression>iif(
+	pur_int_prefix_area is not null
+	and 
+	(
+		substr(trashNonDigits(pur_int_prefix_area), 0, 3) == &#39;011&#39;
+	)
+	and 
+	(
+		length(trashNonDigits(pur_int_prefix_area)) &lt;= 7
+	),
+	substr(pur_int_prefix_area, indexOf(pur_int_prefix_area, &#39;011&#39;) + 3),
+	out_area_code	
+)
+
+//parse area code when international prefix found from int_prefix/area numbers</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+			</assignments>
+		</properties>
+		<visual-constraints bounds="240,384,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Parse calculation columns" endpoint="out"/>
+		<target step="Score and explain low level quality issues" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Regex Matching for digits) --><step id="Regex Matching for digits" className="com.ataccama.dqc.tasks.clean.RegexMatchingAlgorithm" disabled="false" mode="NORMAL">
+		<properties expression="pur_phone" regexNameColumn="pat_phone" appendRegexNameColumn="false" appendRegexNameColumnSeparator=" ">
+			<noMatchColumns/>
+			<regExpressions>
+				<regExpression pattern="([\+])?(\d{1,4})([-|#\./\\\*\s\(]{1,2})(\d{2,4})([-|#\./\\\*\s\)]{1,2})(\d{2,4})([-|#\./\\\*\s])(\d{3,5})" name="int prefix + area + exchange + local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_international_prefix" substitution="$2"/>
+						<regexOutputColumn name="out_area_code" substitution="$4"/>
+						<regexOutputColumn name="out_exchange_designation" substitution="$6"/>
+						<regexOutputColumn name="out_local_number" substitution="$8"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([-|#\./\\\*\s\(]{1,2})?(\d{2,4})([-|#\./\\\*\s\)]{1,2})(\d{2,4})([-|#\./\\\*\s])(\d{3,5})" name="area + exchange + local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_area_code" substitution="$2"/>
+						<regexOutputColumn name="out_exchange_designation" substitution="$4"/>
+						<regexOutputColumn name="out_local_number" substitution="$6"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([-|#\./\\\*\s])?(\d{2,4})([-|#\./\\\*\s])(\d{3,5})" name="exchange + local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_exchange_designation" substitution="$2"/>
+						<regexOutputColumn name="out_local_number" substitution="$4"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?(\d{1,4})([-|#\./\\\*\s\(]{1,2})(\d{2,4})([-|#\./\\\*\s\)]{1,2})((\d|[-|#\./\\\*\s]){7,10})" name="int prefix + area + exchange/local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_international_prefix" substitution="$2"/>
+						<regexOutputColumn name="out_area_code" substitution="$4"/>
+						<regexOutputColumn name="pur_exchange_local" substitution="$6"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?(\d{1,4})([-|#\./\\\*\s\(]{1,2})((\d|[-|#\./\\\*\s\)]){6,9})([-|#\./\\\*\s])(\d{3,5})" name="int prefix + area/exchange + local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_international_prefix" substitution="$2"/>
+						<regexOutputColumn name="pur_area_exchange" substitution="$4"/>
+						<regexOutputColumn name="out_local_number" substitution="$7"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?(\d{1,4})([-|#\./\\\*\s\(]{1,2})((\d|[-|#\./\\\*\s\)]){10,15})" name="int prefix + area/exchange/local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_international_prefix" substitution="$2"/>
+						<regexOutputColumn name="pur_area_exchange_local" substitution="$4"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([-|#\./\\\*\s\(]{1,2})?(\d{2,4})([-|#\./\\\*\s\)]{1,2})((\d|[-|#\./\\\*\s\)]){7,10})" name="area + exchange/local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_area_code" substitution="$2"/>
+						<regexOutputColumn name="pur_exchange_local" substitution="$4"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([-|#\./\\\*\s\(]{1,2})?((\d|[-|#\./\\\*\s\)]){6,9})([-|#\./\\\*\s])(\d{3,5})" name="area/exchange + local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="pur_area_exchange" substitution="$2"/>
+						<regexOutputColumn name="out_local_number" substitution="$5"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?((\d|[-|#\./\\\*\s\(]){4,8})([-|#\./\\\*\s\)]{1,2})(\d{2,4})([-|#\./\\\*\s])(\d{3,5})" name="int prefix/area + exchange + local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="pur_int_prefix_area" substitution="$2"/>
+						<regexOutputColumn name="out_exchange_designation" substitution="$5"/>
+						<regexOutputColumn name="out_local_number" substitution="$7"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?((\d|[-|#\./\\\*\s\(]){4,8})([-|#\./\\\*\s]{1,2})((\d|[-|#\./\\\*\s\)]){7,10})" name="int prefix/area + exchange/local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="pur_int_prefix_area" substitution="$2"/>
+						<regexOutputColumn name="pur_exchange_local" substitution="$5"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?((\d|[-|#\./\\\*\s\(\)]){7,13})([-|#\./\\\*\s])(\d{3,5})" name="int prefix/area/exchange + local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="pur_int_prefix_area_exchange" substitution="$2"/>
+						<regexOutputColumn name="out_local_number" substitution="$5"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([-|#\./\\\*\s])?(\d{4})" name="local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_local_number" substitution="$2"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([-|#\./\\\*\s\)])?(\d{3})(\d{4})" name="exchange/local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_exchange_designation" substitution="$2"/>
+						<regexOutputColumn name="out_local_number" substitution="$3"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([-|#\./\\\*\s\(]{1,2})?(\d{3})(\d{3})(\d{4})" name="area/exchange/local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_area_code" substitution="$2"/>
+						<regexOutputColumn name="out_exchange_designation" substitution="$3"/>
+						<regexOutputColumn name="out_local_number" substitution="$4"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?(\d{1}|\d{3})(\d{3})(\d{3})(\d{4})" name="int prefix/area/exchange/local" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="out_international_prefix" substitution="$2"/>
+						<regexOutputColumn name="out_area_code" substitution="$3"/>
+						<regexOutputColumn name="out_exchange_designation" substitution="$4"/>
+						<regexOutputColumn name="out_local_number" substitution="$5"/>
+					</resultColumns>
+				</regExpression>
+				<regExpression pattern="([\+])?([-|#\./\\\*\s\(\)0-9]+)" name="unrecognized number" multiplicative="false" ignoreCase="true" partialMatch="false">
+					<resultColumns>
+						<regexOutputColumn name="pur_phone" substitution="$2"/>
+					</resultColumns>
+				</regExpression>
+			</regExpressions>
+			<scorer>
+				<scoringEntries>
+					<scoringEntry score="0" explainAs="STN_NULL" explain="true" key="STN_NULL"/>
+					<scoringEntry score="0" explainAs="STN_MATCHED" explain="true" key="STN_MATCHED"/>
+					<scoringEntry score="0" explainAs="STN_NOT_MATCHED" explain="true" key="STN_NOT_MATCHED"/>
+				</scoringEntries>
+			</scorer>
+		</properties>
+		<visual-constraints bounds="240,312,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Regex Matching for digits" endpoint="out"/>
+		<target step="Parse calculation columns" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Regex Matching for extension) --><step id="Regex Matching for extension" className="com.ataccama.dqc.tasks.clean.RegexMatchingAlgorithm" disabled="false" mode="NORMAL">
+		<properties expression="pur_phone" appendRegexNameColumn="false" appendRegexNameColumnSeparator=" ">
+			<noMatchColumns/>
+			<regExpressions>
+				<regExpression pattern="((extension|ext|xt|x)[-|#\./\\\*\s]?(\d+))$" name="number extension" multiplicative="false" ignoreCase="true" partialMatch="true">
+					<resultColumns>
+						<regexOutputColumn name="pur_phone" substitution="$`"/>
+						<regexOutputColumn name="out_extension_number" substitution="$3"/>
+					</resultColumns>
+				</regExpression>
+			</regExpressions>
+			<scorer>
+				<scoringEntries>
+					<scoringEntry score="0" explainAs="STN_NULL" explain="true" key="STN_NULL"/>
+					<scoringEntry score="0" explainAs="STN_MATCHED" explain="true" key="STN_MATCHED"/>
+					<scoringEntry score="0" explainAs="STN_NOT_MATCHED" explain="true" key="STN_NOT_MATCHED"/>
+				</scoringEntries>
+			</scorer>
+		</properties>
+		<visual-constraints bounds="240,168,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Regex Matching for extension" endpoint="out"/>
+		<target step="Replace letters with digits" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Remove source/calculation columns) --><step id="Remove source/calculation columns" className="com.ataccama.dqc.tasks.flow.AlterFormat" disabled="false" mode="NORMAL">
+		<properties>
+			<addedColumns/>
+			<removedColumns>
+				<columnRef name="src_phone"/>
+				<columnRef name="note"/>
+				<columnRef name="pur_phone"/>
+				<columnRef name="pur_exchange_local"/>
+				<columnRef name="pur_area_exchange"/>
+				<columnRef name="pur_int_prefix_area"/>
+				<columnRef name="pur_int_prefix_area_exchange"/>
+				<columnRef name="pur_area_exchange_local"/>
+				<columnRef name="pat_phone"/>
+			</removedColumns>
+		</properties>
+		<visual-constraints bounds="240,672,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Remove source/calculation columns" endpoint="out"/>
+		<target step="out" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Replace letters with digits) --><step id="Replace letters with digits" className="com.ataccama.dqc.tasks.expressions.ColumnAssigner" disabled="false" mode="NORMAL">
+		<properties>
+			<assignments>
+				<assignment expression="substituteAll(@&quot;A|B|C|a|b|c&quot;, &#39;2&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment expression="substituteAll(@&quot;D|E|F|d|e|f&quot;, &#39;3&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment expression="substituteAll(@&quot;G|H|I|g|h|i&quot;, &#39;4&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment expression="substituteAll(@&quot;J|K|L|j|k|l&quot;, &#39;5&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment expression="substituteAll(@&quot;M|N|O|m|n|o&quot;, &#39;6&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment expression="substituteAll(@&quot;P|Q|R|S|p|q|r|s&quot;, &#39;7&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment expression="substituteAll(@&quot;T|U|V|t|u|v&quot;, &#39;8&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment expression="substituteAll(@&quot;W|X|Y|Z|w|x|y|z&quot;, &#39;9&#39;, pur_phone)" column="pur_phone">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+			</assignments>
+		</properties>
+		<visual-constraints bounds="240,240,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Replace letters with digits" endpoint="out"/>
+		<target step="Regex Matching for digits" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Score and explain low level quality issues) --><step id="Score and explain low level quality issues" className="com.ataccama.dqc.tasks.scoring.SimpleScoring" disabled="false" mode="NORMAL">
+		<properties defaultScoreColumn="score_phone" defaultExplainColumn="exp_phone">
+			<scoringCases>
+				<scoringCase condition="pur_phone is null" description="PHONE_EMPTY" explanation="&quot;PHONE_EMPTY&quot;" score="50000"/>
+				<scoringCase description="PHONE_TOO_MANY_DIGITS" explanation="&quot;PHONE_TOO_MANY_DIGITS&quot;" score="20000">
+					<condition>(
+	pur_phone is not null and length(trashNonDigits(pur_phone)) &gt; 17
+)
+or
+(
+	pur_area_exchange_local is not null	and length(trashNonDigits(pur_area_exchange_local)) &gt; 13
+)</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_UNPARSABLE" explanation="&quot;PHONE_UNPARSABLE&quot;" score="5000">
+					<condition>pur_phone is not null
+and
+length(trashNonDigits(pur_phone)) &lt;= 17
+and 
+out_international_prefix is null
+and
+out_area_code is null
+and
+out_exchange_designation is null
+and
+out_local_number is null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_AREA_EXCHANGE_LOCAL_UNPARSABLE" explanation="&quot;PHONE_AREA_EXCHANGE_LOCAL_UNPARSABLE&quot;" score="3000">
+					<condition>pur_area_exchange_local is not null
+and
+length(trashNonDigits(pur_area_exchange_local)) &lt;= 13
+and
+out_area_code is null
+and
+out_exchange_designation is null
+and
+out_local_number is null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_INT_PREFIX_AREA_EXCHANGE_UNPARSABLE" explanation="&quot;PHONE_INT_PREFIX_AREA_EXCHANGE_UNPARSABLE&quot;" score="3000">
+					<condition>pur_int_prefix_area_exchange is not null
+and 
+out_international_prefix is null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_AREA_EXCHANGE_MISSING" explanation="&quot;PHONE_AREA_EXCHANGE_MISSING&quot;" score="2800">
+					<condition>out_area_code is null
+and
+out_exchange_designation is null
+and
+out_local_number is not null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_EXCHANGE_LOCAL_UNPARSABLE" explanation="&quot;PHONE_EXCHANGE_LOCAL_UNPARSABLE&quot;" score="2000">
+					<condition>pur_exchange_local is not null
+and
+out_exchange_designation is null
+and
+out_local_number is null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_AREA_EXCHANGE_UNPARSABLE" explanation="&quot;PHONE_AREA_EXCHANGE_UNPARSABLE&quot;" score="2000">
+					<condition>pur_area_exchange is not null
+and
+out_area_code is null
+and
+out_exchange_designation is null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_INT_PREFIX_AREA_UNPARSABLE" explanation="&quot;PHONE_INT_PREFIX_AREA_UNPARSABLE&quot;" score="1800">
+					<condition>pur_int_prefix_area is not null
+and 
+out_international_prefix is null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_EXCHANGE_INVALID_RANGE" explanation="&quot;PHONE_EXCHANGE_INVALID_RANGE&quot;" score="2500">
+					<condition>length(out_exchange_designation) == 3
+and
+toInteger(out_exchange_designation) &lt; 199</condition>
+				</scoringCase>
+				<scoringCase condition="out_exchange_designation is not null and length(out_exchange_designation) != 3" description="PHONE_EXCHANGE_INCORRECT_DIGITS" explanation="&quot;PHONE_EXCHANGE_INCORRECT_DIGITS&quot;" score="1500"/>
+				<scoringCase condition="out_local_number is not null and length(out_local_number) != 4" description="PHONE_LOCAL_INCORRECT_DIGITS" explanation="&quot;PHONE_LOCAL_INCORRECT_DIGITS&quot;" score="1500"/>
+				<scoringCase description="PHONE_AREA_CODE_MISSING" explanation="&quot;PHONE_AREA_CODE_MISSING&quot;" score="1200">
+					<condition>out_area_code is null
+and
+out_exchange_designation is not null
+and
+out_local_number is not null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_FOREIGN_INT_PREFIX" explanation="&quot;PHONE_FOREIGN_INT_PREFIX&quot;" score="25">
+					<condition>out_international_prefix is not null
+and
+out_international_prefix is not &#39;1&#39;
+and
+out_international_prefix is not &#39;001&#39;
+and
+out_international_prefix is not &#39;011&#39;</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_INT_PREFIX_AREA_EXCHANGE_LOCAL_PARSED" explanation="&quot;PHONE_INT_PREFIX_AREA_EXCHANGE_LOCAL_PARSED&quot;" score="300">
+					<condition>pat_phone == &#39;unrecognized number&#39;
+and
+pur_phone is not null
+and
+out_international_prefix is not null
+and
+out_area_code is not null
+and
+out_exchange_designation is not null
+and
+out_local_number is not null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_AREA_EXCHANGE_LOCAL_PARSED" explanation="&quot;PHONE_AREA_EXCHANGE_LOCAL_PARSED&quot;" score="200">
+					<condition>pat_phone != &#39;unrecognized number&#39;
+and
+pur_area_exchange_local is not null
+and
+length(trashNonDigits(pur_area_exchange_local)) &lt;= 13
+and
+out_area_code is not null
+and
+out_exchange_designation is not null
+and
+out_local_number is not null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_INT_PREFIX_AREA_EXCHANGE_PARSED" explanation="&quot;PHONE_INT_PREFIX_AREA_EXCHANGE_PARSED&quot;" score="200">
+					<condition>pur_int_prefix_area_exchange is not null
+and 
+out_international_prefix is not null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_EXCHANGE_LOCAL_PARSED" explanation="&quot;PHONE_EXCHANGE_LOCAL_PARSED&quot;" score="100">
+					<condition>pur_area_exchange_local is null
+and
+pur_exchange_local is not null
+and
+out_exchange_designation is not null
+and
+out_local_number is not null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_AREA_EXCHANGE_PARSED" explanation="&quot;PHONE_AREA_EXCHANGE_PARSED&quot;" score="100">
+					<condition>pur_int_prefix_area_exchange is null
+and
+pur_area_exchange is not null
+and
+out_area_code is not null
+and
+out_exchange_designation is not null</condition>
+				</scoringCase>
+				<scoringCase description="PHONE_INT_PREFIX_AREA_PARSED" explanation="&quot;PHONE_INT_PREFIX_AREA_PARSED&quot;" score="100">
+					<condition>pur_int_prefix_area is not null
+and 
+out_international_prefix is not null</condition>
+				</scoringCase>
+				<scoringCase condition="out_extension_number is not null" description="PHONE_HAS_EXTENSION" explanation="&quot;PHONE_HAS_EXTENSION&quot;" score="5"/>
+			</scoringCases>
+		</properties>
+		<visual-constraints bounds="240,456,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Score and explain low level quality issues" endpoint="out"/>
+		<target step="Lookup USA/CAN area codes" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Set std_phone, lbl_phone) --><step id="Set std_phone, lbl_phone" className="com.ataccama.dqc.tasks.expressions.ColumnAssigner" disabled="false" mode="NORMAL">
+		<properties>
+			<assignments>
+				<assignment column="std_phone">
+					<expression>case(
+	//Standardize 1-800 and 1-900 numbers
+	score_phone &lt; 1000
+	and
+	note == &#39;non-geographic&#39;
+	and
+	matches(@&quot;(8|9)\d{2}&quot;, out_area_code),
+	&#39;1-&#39; + out_area_code + &#39;-&#39; + out_exchange_designation + &#39;-&#39; + out_local_number,
+	//Standardize all other numbers
+	score_phone &lt; 1000
+	and
+	note is in {&#39;valid&#39;, &#39;non-geographic&#39;}
+	and
+	not matches(@&quot;(8|9)\d{2}&quot;, out_area_code),
+	&#39;(&#39; + out_area_code + &#39;) &#39; + out_exchange_designation + &#39;-&#39; + out_local_number,
+	std_phone
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+				<assignment column="lbl_phone">
+					<expression>case(
+	score_phone &lt; 1000
+	and
+	note = &#39;valid&#39;
+	and
+	containsWord(exp_phone, &#39;PHONE_AREA_CODE_APPROX&#39;),
+	&quot;PHONE_CORRECTED_USA_CAN&quot;,
+	//Non-geographic and corrected
+	score_phone &lt; 1000
+	and
+	note = &#39;non-geographic&#39;
+	and
+	containsWord(exp_phone, &#39;PHONE_AREA_CODE_APPROX&#39;),
+	&quot;PHONE_CORRECTED_NON_GEOGRAPHIC&quot;,
+	score_phone &lt; 1000
+	and
+	note = &#39;valid&#39;,
+	&quot;PHONE_VALID_USA_CAN&quot;,
+	//Non-geographic and valid
+	score_phone &lt; 1000
+	and
+	note = &#39;non-geographic&#39;,
+	&quot;PHONE_VALID_NON_GEOGRAPHIC&quot;,
+	&quot;PHONE_INVALID_USA_CAN&quot;
+)</expression>
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+			</assignments>
+		</properties>
+		<visual-constraints bounds="240,600,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Set std_phone, lbl_phone" endpoint="out"/>
+		<target step="Remove source/calculation columns" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (in) --><step id="in" className="com.ataccama.dqc.tasks.common.usersteps.io.InputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<columns>
+				<columnDef name="src_phone" type="STRING"/>
+			</columns>
+			<shadowColumns/>
+		</properties>
+		<visual-constraints bounds="240,24,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="in" endpoint="out"/>
+		<target step="Add calculation/output columns" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (out) --><step id="out" className="com.ataccama.dqc.tasks.common.usersteps.io.OutputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<requiredColumns/>
+		</properties>
+		<visual-constraints bounds="240,744,-1,-1" layout="vertical"/>
+	</step>
+
+</purity-config>

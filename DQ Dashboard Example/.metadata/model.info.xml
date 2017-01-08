@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root>
+	<item path="/logicalModel/entities">
+		<positions/>
+	</item>
+	<item path="/systems[0]">
+		<positions>
+			<item id="10925" value="76,79,209,-1"/>
+			<item id="10998" value="306,181,212,-1"/>
+			<item id="16156" value="342,122,140,24"/>
+		</positions>
+	</item>
+	<item path="/systems[1]">
+		<positions>
+			<item id="10479" value="122,34,149,-1"/>
+		</positions>
+	</item>
+	<item path="/systems[2]">
+		<positions>
+			<item id="17166" value="63,68,143,110"/>
+			<item id="17200" value="71,230,137,127"/>
+			<item id="17234" value="467,164,144,-1"/>
+			<item id="17373" value="286,287,140,24"/>
+			<item id="17407" value="276,109,140,24"/>
+		</positions>
+	</item>
+	<item path="/systems[3]">
+		<positions>
+			<item id="16988" value="73,42,161,-1"/>
+		</positions>
+	</item>
+	<item path="/SourceSystems[0]/entities">
+		<positions/>
+	</item>
+	<item path="/SourceSystems[1]/entities">
+		<positions>
+			<item id="339" value="7,855,-1,-1"/>
+			<item id="44857" value="411,127,-1,-1"/>
+			<item id="45176" value="7,493,-1,-1"/>
+			<item id="45466" value="7,284,-1,-1"/>
+			<item id="45680" value="7,7,-1,-1"/>
+			<item id="45965" value="231,764,-1,-1"/>
+			<item id="46173" value="231,331,-1,-1"/>
+			<item id="46241" value="231,596,-1,-1"/>
+			<item id="46309" value="231,453,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/SourceSystems[0]/SourceSystemSubTypeWrapper[0]">
+		<positions>
+			<item id="51435" value="513,230,399,-1"/>
+			<item id="51439" value="1161,307,401,-1"/>
+			<item id="51443" value="55,78,230,-1"/>
+			<item id="51447" value="53,521,233,246"/>
+			<item id="51459" value="343,568,116,23"/>
+			<item id="51467" value="340,278,94,29"/>
+			<item id="51475" value="983,469,105,23"/>
+		</positions>
+	</item>
+	<item path="/SourceSystems[0]/SourceSystemSubTypeWrapper[1]">
+		<positions>
+			<item id="51249" value="338,29,197,-1"/>
+			<item id="51253" value="7,7,187,-1"/>
+			<item id="51257" value="7,352,161,-1"/>
+			<item id="51261" value="7,544,171,-1"/>
+			<item id="145565" value="208,543,-1,-1"/>
+			<item id="145566" value="208,430,-1,-1"/>
+			<item id="145567" value="208,296,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/SourceSystems[0]/SourceSystemSubTypeWrapper[2]">
+		<positions>
+			<item id="10678249" value="7,233,-1,-1"/>
+			<item id="10678253" value="7,7,-1,-1"/>
+			<item id="10678264" value="422,50,-1,-1"/>
+			<item id="10678270" value="7,340,-1,-1"/>
+			<item id="10678277" value="422,374,-1,-1"/>
+			<item id="10678280" value="207,102,-1,-1"/>
+			<item id="10678282" value="207,401,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/SourceSystems[0]/SourceSystemSubTypeWrapper[3]">
+		<positions/>
+	</item>
+	<item path="/SourceSystems[0]/SourceSystemSubTypeWrapper[4]">
+		<positions>
+			<item id="10676877" value="7,396,-1,-1"/>
+			<item id="10676881" value="7,272,-1,-1"/>
+			<item id="10676886" value="7,7,-1,-1"/>
+			<item id="10676893" value="7,165,-1,-1"/>
+			<item id="10676897" value="7,848,-1,-1"/>
+			<item id="10676900" value="7,503,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/sourceSystemRoot/sourceSystemWrapper[0]/schemaWrapper[0]/lMRoot">
+		<positions>
+			<item id="10739550" value="21,242,-1,-1"/>
+			<item id="10739606" value="622,251,-1,-1"/>
+			<item id="10739607" value="576,55,-1,-1"/>
+			<item id="10935126" value="899,7,-1,-1"/>
+			<item id="10739551" value="398,308,-1,-1"/>
+			<item id="10739771" value="403,194,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/sourceSystemRoot/sourceSystemWrapper[0]/schemaWrapper[1]/lMRoot">
+		<positions>
+			<item id="10739550" value="25,245,-1,-1"/>
+			<item id="10739606" value="619,267,-1,-1"/>
+			<item id="10739607" value="451,71,-1,-1"/>
+			<item id="10955182" value="806,7,-1,-1"/>
+			<item id="10739551" value="455,317,-1,-1"/>
+			<item id="10739771" value="358,176,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/sourceSystemRoot/sourceSystemWrapper[1]/schemaWrapper[0]/lMRoot">
+		<positions>
+			<item id="10739550" value="365,417,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/sourceSystemRoot/sourceSystemWrapper[2]/schemaWrapper[0]/lMRoot">
+		<positions>
+			<item id="10867086" value="48,152,438,-1"/>
+		</positions>
+	</item>
+	<item path="/sourceSystemRoot/sourceSystemWrapper[0]/modelWrapper[0]/lMRoot">
+		<positions>
+			<item id="11882728" value="32,22,-1,-1"/>
+			<item id="11882811" value="500,258,-1,-1"/>
+			<item id="11882816" value="45,323,-1,-1"/>
+			<item id="11882825" value="521,72,-1,-1"/>
+			<item id="11882829" value="338,202,-1,-1"/>
+			<item id="11882830" value="80,259,-1,-1"/>
+			<item id="11883079" value="310,88,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/sourceSystemRoot/sourceSystemWrapper[1]/modelWrapper[0]/lMRoot">
+		<positions>
+			<item id="11883750" value="7,7,-1,-1"/>
+		</positions>
+	</item>
+	<item path="/sourceSystemRoot/sourceSystemWrapper[0]/modelWrapper[1]/lMRoot">
+		<positions>
+			<item id="12054227" value="43,33,240,196"/>
+			<item id="12054235" value="511,269,203,101"/>
+			<item id="12054243" value="56,334,203,215"/>
+			<item id="12054251" value="532,83,203,66"/>
+			<item id="12054259" value="350,213,109,23"/>
+			<item id="12054263" value="92,270,127,23"/>
+			<item id="12054267" value="322,99,115,23"/>
+		</positions>
+	</item>
+</root>

@@ -1,0 +1,570 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<metametadata-library>
+	<nodes>
+		<node id="lMRoot" icon="icons/tables.png" sortChildren="false" name="lMRoot" label="Technical Model" expanded="false">
+			<attributes>
+        
+      </attributes>
+			<subNodes>
+				<subNode min="1" id="lMTableWrapper" max="1"/>
+				<subNode min="1" id="lMRelationshipWrapper" max="1"/>
+			</subNodes>
+			<editors>
+				<editor class="com.ataccama.ame.core.editors.RelationEditor">
+					<tableTypes>
+						<tableType name="Table">
+							<tableContainerSelectorPath>lMTableWrapper</tableContainerSelectorPath>
+							<tableNamePath>@name</tableNamePath>
+							<columnSelectorPath>lMAttributeWrapper/lMAttributeNode</columnSelectorPath>
+							<columnDisplayTemplate>{@name}: {@type} ({@businessName})</columnDisplayTemplate>
+							<entityActions>
+								<action label="Edit entity..." selectorPath="."/>
+								<action menu="true" label="Transformations" selectorPath="/plans/folder[@entity = $current/@name]/plan"/>
+								<action menu="true" label="Physical tables" selectorPath="/database/*/physicalTable[@entity = $current/@name]"/>
+							</entityActions>
+							<entityColorings>
+								<coloring test=".[@entityRole=&quot;entity&quot;]" color="#0080ff"/>
+								<coloring test=".[@entityRole=&quot;dictionary&quot;]" color="#800080"/>
+							</entityColorings>
+						</tableType>
+					</tableTypes>
+					<relationshipTypes>
+						<relationshipType name="Relation">
+							<relationshipContainerSelectorPath>lMRelationshipWrapper</relationshipContainerSelectorPath>
+							<relationshipNamePath>@name</relationshipNamePath>
+							<relationshipParentPath>@parentTable</relationshipParentPath>
+							<relationshipChildPath>@childTable</relationshipChildPath>
+						</relationshipType>
+					</relationshipTypes>
+				</editor>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor class="com.ataccama.ame.core.imports.DatabaseStructureImporter">
+					<entityContainerPath>lMTableWrapper</entityContainerPath>
+					<entityNamePath>@name</entityNamePath>
+					<columnContainerPath>lMAttributeWrapper</columnContainerPath>
+					<columnNamePath>@name</columnNamePath>
+					<columnTypePath>@type</columnTypePath>
+					<columnDbTypePath>@dbType</columnDbTypePath>
+					<relationContainerPath>lMRelationshipWrapper</relationContainerPath>
+					<relationNamePath>@name</relationNamePath>
+					<relationParentTablePath>@parentTable</relationParentTablePath>
+					<relationChildTablePath>@childTable</relationChildTablePath>
+					<relationParentColumnPath>@parentColumn</relationParentColumnPath>
+					<relationChildColumnPath>@childColumn</relationChildColumnPath>
+					<relationFKContainer>lMForeignKeyWrapper</relationFKContainer>
+				</editor>
+				<editor class="com.ataccama.ame.core.imports.RelationalXmiImporter"><!-- 
+RelationalXmiImporter is used for importing metadata from various XMI (XML) file exported from some modeling tool. Parameter configuration is similar to DatabaseStructureImporter described in previous chapter, but the GUI will be little different. Instead of selecting database connection and database table it will show the dialog for selecting file to be imported. The review page will be the same as in DatabaseStructureImporter.
+
+Currently there are supported following file formats:
+
+EnterpriseArchitect XMI version 1.1 with the model stored using UML version 1.4
+EnterpriseArchitect XMI version 2.1 with the model stored using UML version 2.1
+ERwin Logical, Physical and Logical/Physical models exported as XML
+Conceptual and Physical Power Designer models
+XmlSchema
+ --><entityContainerPath>lMTableWrapper</entityContainerPath>
+					<entityNamePath>@name</entityNamePath>
+					<columnContainerPath>lMAttributeWrapper</columnContainerPath>
+					<columnNamePath>@name</columnNamePath>
+					<columnTypePath>@type</columnTypePath>
+					<columnDbTypePath>@dbType</columnDbTypePath>
+					<relationContainerPath>lMRelationshipWrapper</relationContainerPath>
+					<relationNamePath>@name</relationNamePath>
+					<relationParentTablePath>@parentTable</relationParentTablePath>
+					<relationChildTablePath>@childTable</relationChildTablePath>
+					<relationParentColumnPath>@parentColumn</relationParentColumnPath>
+					<relationChildColumnPath>@childColumn</relationChildColumnPath>
+					<relationFKContainer>lMForeignKeyWrapper</relationFKContainer>
+				</editor>
+				<editor targetNodePath="./lMTableWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New table">
+		<!-- Create child is used when you need to create new node. Standard property dialog will be opened in order to get information about the new node. 
+		MMD configuration has following attributes:
+class - com.ataccama.ame.core.editors.CreateChild
+label - optional label for the command which will be displayed in the popup menu. 
+		If not specified, the default label will be used.
+targetNodePath - optional MD path expression identifying the parent node, where the child node will be edited. 
+		The path is relative to the current node and if not specified the current node will be used. -->
+		</editor>
+			</editors>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+					<expression>lMTableWrapper[count(lMTableNode/centralEntityNode[@centralEntity=&#39;true&#39;]) = 1]</expression>
+					<message>Only one central entity can be defined!</message>
+				</validation>
+			</validations>
+			<description>List of the technical models, where the data model is defined.</description>
+		</node>
+		<node id="lMTableWrapper" icon="icons/tables.png" name="lMTableWrapper" label="Tables" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMTableNode" max="-1"/>
+			</subNodes>
+		</node>
+		<node id="lMTableNode" icon="icons/table.png" name="lMTableNode" label="{@name}" explorerLeaf="true">
+			<subNodes>
+				<subNode min="1" id="lMAttributeWrapper" max="1"/>
+				<subNode min="1" id="lMAttributeCollContainerWrapper" max="1"/>
+				<subNode min="1" id="CentralEntityNode" max="1"/>
+			</subNodes>
+			<attributes>
+				<attribute name="name" label="Name" type="string" required="true"/>
+			</attributes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor class="com.ataccama.ame.core.editors.DeleteChild" label="Delete Table"/>
+			</editors>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@name</selectPath>
+					<valueExpr>[\p{L}_]+[\p{L}\p{Digit}_]*</valueExpr>
+					<message>Name does not match allowed regular expression</message>
+				</validation>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+					<selectPath>../lMTableNode/@name</selectPath>
+					<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+				</validation>
+			</validations>
+		</node>
+		<node id="lMRelationshipWrapper" name="lMRelationshipWrapper" label="Relationships" explorerLeaf="true" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMRelationshipNode" max="-1"/>
+			</subNodes>
+		</node>
+		<node id="lMRelationshipNode" name="lMRelationshipNode" label="{@name}">
+			<subNodes>
+				<subNode min="1" id="lMForeignKeyWrapper" max="1"/>
+			</subNodes>
+			<attributes>
+				<attribute name="name" label="Name" type="string" required="true"/>
+				<attribute name="parentTable" label="Parent Table" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>ancestor::lMRoot/lMTableWrapper/lMTableNode/@name</selectPath>
+					</valuesProvider>
+				</attribute>
+				<attribute name="childTable" label="Child Table" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>ancestor::lMRoot/lMTableWrapper/lMTableNode/@name</selectPath>
+					</valuesProvider>
+				</attribute>
+			</attributes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+			</editors>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+					<selectPath>../lMRelationshipNode/@name</selectPath>
+					<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+				</validation>
+			</validations>
+		</node>
+		<node id="lMForeignKeyWrapper" name="lMForeignKeyWrapper" label="Foreign key definition" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMForeignKeyNode" max="-1"/>
+			</subNodes>
+		</node>
+		<node id="lMForeignKeyNode" name="lMForeignKeyNode" label="{@parentColumn} &lt;- {@childColumn}">
+			<attributes>
+				<attribute name="parentColumn" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>ancestor::lMRoot/lMTableWrapper/lMTableNode[@name=$current/ancestor::lMRelationshipNode/@parentTable]/lMAttributeWrapper/lMAttributeNode</selectPath>
+						<labelTemplate>{@name}: {@type}</labelTemplate>
+						<valueTemplate>{@name}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+				<attribute name="childColumn" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>ancestor::lMRoot/lMTableWrapper/lMTableNode[@name=$current/ancestor::lMRelationshipNode/@childTable]/lMAttributeWrapper/lMAttributeNode</selectPath>
+						<labelTemplate>{@name}: {@type}</labelTemplate>
+						<valueTemplate>{@name}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+			</attributes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+					<expression>$current/cc[@childType=$current/cc/@parentType]</expression>
+					<message>&#39;{ancestor::lMRelationshipNode/@name}&#39;: Attribute type does not match ({@parentColumn}: {cc/@parentType}, {@childColumn}: {cc/@childType})</message>
+				</validation>
+			</validations>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+			</editors>
+			<subNodes>
+				<subNode min="1" id="cclMForeignKeyNode" max="1"/>
+			</subNodes>
+		</node>
+		<node id="lMAttributeWrapper" name="lMAttributeWrapper" label="Attributes" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMAttributeNode" max="-1"/>
+			</subNodes>
+			<description>List of attributes.</description>
+		</node>
+		<node id="lMAttributeNode" name="lMAttributeNode" label="{@name}">
+			<attributes>
+				<attribute name="name" label="Name" type="string" required="true"/>
+				<attribute name="type" label="DQC Data Type" type="enum" required="true" enumValues="string,integer,datetime,day,long,boolean,float" defaultValue="string"/>
+				<attribute name="businessName" label="Business Name" type="string" required="false" defaultValue=""/>
+				<attribute name="ruleName" label="Applied Business Rule" type="list" required="false" defaultValue="">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*[(ruleColumnWrapper/ruleColumnNode[1]/@type=$current/../@type) and not(ruleColumnWrapper/ruleColumnNode[2]/@name) and @type!=&quot;MultiEntityExpressionRule&quot;] |
+					$current/ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*[(ruleColumnWrapper/ruleColumnNode[1]/@type=$current/../@type) and not(ruleColumnWrapper/ruleColumnNode[2]/@name) and @type!=&quot;MultiEntityExpressionRule&quot;] |
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/*[(ruleColumnWrapper/ruleColumnNode[1]/@type=$current/../@type) and not(ruleColumnWrapper/ruleColumnNode[2]/@name) and @type!=&quot;MultiEntityExpressionRule&quot;] | 
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode[$current/../@type=&#39;string&#39;] | 
+					$current/ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode[$current/../@type=&#39;string&#39;] | 
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/dqCopyRulesNode[$current/../@type=&#39;string&#39;]
+					</selectPath>
+						<labelTemplate>{@ruleTypeLabel}: {@code} ({@name})</labelTemplate>
+						<valueTemplate>{@ruleType}: {@code}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+				<attribute visible="false" name="dbType" label="DB Type" type="string" required="false" defaultValue=""/>
+			</attributes>
+			<subNodes>
+				<subNode min="1" id="cclMAttributeRuleInfo" max="1"/>
+			</subNodes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@name</selectPath>
+					<valueExpr>[\p{L}_]+[\p{L}\p{Digit}_]*</valueExpr>
+					<message>Name does not match allowed regular expression</message>
+				</validation>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+					<selectPath>../lMAttributeNode/@name</selectPath>
+					<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+				</validation>
+			</validations>
+		</node>
+		<node id="lMAttributeCollContainerWrapper" name="lMAttributeCollContainerWrapper" label="Attribute Collections" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMAttributeCollContainer" max="-1"/>
+			</subNodes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+					<selectPath>./*/@code</selectPath>
+					<message>&#39;{.}&#39; is not unique collection name</message>
+				</validation>
+			</validations>
+			<description>List of relationships between rule and atribute.</description>
+		</node>
+		<node id="lMAttributeCollContainer" abstract="true" name="lMAttributeCollContainer" label="{@name}" expanded="false">
+			<subNodes>
+				<subNode min="1" id="cclMAttributeCollInfo" max="1"/>
+			</subNodes>
+			<attributes>
+				<attribute name="code" label="ID" type="string" required="true"/>
+				<attribute name="name" label="Name" type="string" required="true"/>
+			</attributes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@name</selectPath>
+					<valueExpr>[^\.]*</valueExpr>
+					<message>Collection name cannot contain character . (dot).</message>
+				</validation>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@code</selectPath>
+					<valueExpr>[^()]*</valueExpr>
+					<message>Collection ID cannot contain parenthesis ().</message>
+				</validation>
+			</validations>
+		</node>
+		<node id="lMAttributeCollContainerOneEntity" inherits="lMAttributeCollContainer" name="lMAttributeCollContainerOneEntity" label="Map One Entity rule" expanded="false">
+			<attributes>
+				<attribute name="ruleName" label="Applied Business Rule" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>
+   					<!-- standard rules from Generic rules -->
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*[@type!=&#39;MultiEntityExpressionRule&#39;] |
+					<!-- standard rules from systems -->
+					ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*[@type!=&#39;MultiEntityExpressionRule&#39;] |
+					<!-- standard rules from dq dim -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/*[@type!=&#39;MultiEntityExpressionRule&#39;] 
+					
+					<!-- commented out - redundant with previous 3 cases
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode | 
+					$current/ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode | 
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/dqCopyRulesNode
+					-->
+					
+					</selectPath>
+						<labelTemplate>{@ruleTypeLabel}: {@code} ({@name})</labelTemplate>
+						<valueTemplate>{@ruleType}: {@code}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+			</attributes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@name</selectPath>
+					<valueExpr>[^\.]*</valueExpr>
+					<message>Collection name cannot contain character . (dot).</message>
+				</validation>
+			</validations>
+			<subNodes>
+				<subNode min="1" id="lMAttributeCollWrapper" max="1"/>
+			</subNodes>
+		</node>
+		<node id="lMAttributeCollContainerMultiEntityParent" inherits="lMAttributeCollContainer" name="lMAttributeCollContainerMultiEntityParent" label="Map Multi Entity rule - Parent" expanded="false">
+			<attributes>
+				<attribute name="ruleName" label="Applied Business Rule" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>
+					<!-- multi entity rules from Generic rules -->
+					ancestor::md/defaultRuleRoot/collectionRulesOptionWrapper/collectionRulesOptionNode//ruleOptionWrapper/*[@type=&#39;MultiEntityExpressionRule&#39;] |
+					<!-- multi entity rules from systems -->
+					ancestor::sourceSystemNode/ruleRoot/collectionRulesOptionWrapper/collectionRulesOptionNode//ruleOptionWrapper/*[@type=&#39;MultiEntityExpressionRule&#39;] |
+					<!-- multi entity rules from dq dim -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode//dqRuleOptionWrapper/*[@type=&#39;MultiEntityExpressionRule&#39;]
+					
+
+					</selectPath>
+						<labelTemplate>{@ruleTypeLabel}: {@code} ({@name})</labelTemplate>
+						<valueTemplate>{@ruleType}: {@code}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+			</attributes>
+			<subNodes>
+				<subNode min="1" id="lMAttributeCollWrapper" max="1"/>
+			</subNodes>
+		</node>
+		<node id="lMAttributeCollContainerMultiEntityChild" inherits="lMAttributeCollContainer" name="lMAttributeCollContainerMultiEntityChild" label="Map Multi Entity rule - Child" expanded="false">
+			<attributes>
+				<attribute name="ruleName" label="Applied Business Rule" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>
+					<!-- multi entity rules from Generic rules -->
+					ancestor::md/defaultRuleRoot/collectionRulesOptionWrapper/collectionRulesOptionNode//ruleOptionWrapper/*[@type=&#39;MultiEntityExpressionRule&#39;] |
+					<!-- multi entity rules from systems -->
+					ancestor::sourceSystemNode/ruleRoot/collectionRulesOptionWrapper/collectionRulesOptionNode//ruleOptionWrapper/*[@type=&#39;MultiEntityExpressionRule&#39;] |
+					<!-- multi entity rules from dq dim -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode//dqRuleOptionWrapper/*[@type=&#39;MultiEntityExpressionRule&#39;] 
+					
+
+					</selectPath>
+						<labelTemplate>{@ruleTypeLabel}: {@code} ({@name})</labelTemplate>
+						<valueTemplate>{@ruleType}: {@code}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+				<attribute name="parentInstance" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>
+					<!-- multi entity rules from Generic rules -->
+
+					ancestor::lMTableWrapper/lMTableNode/lMAttributeCollContainerWrapper/lMAttributeCollContainerMultiEntityParent[@ruleName=$current/../@ruleName]
+
+					</selectPath>
+						<labelTemplate>{ancestor::lMTableNode/@name}.{cc/@col} ({cc/@ruleCode} ({cc/@ruleName}))</labelTemplate>
+						<valueTemplate>{ancestor::lMTableNode/@name}.{cc/@col}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+			</attributes>
+			<subNodes>
+				<subNode min="1" id="lMAttributeChildCollWrapper" max="1"/>
+				<subNode min="1" id="lMAttributeRuleResultWrapper" max="1"/>
+			</subNodes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+					<selectPath>../lMAttributeCollContainerMultiEntityChild/@code</selectPath>
+					<message>&#39;{.}&#39; is not unique collection name</message>
+				</validation><!--			<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           		<expression>../lMAttributeCollContainerMultiEntityChild[@ruleName=&#39;genericRule: test_Lenka&#39;]</expression>
+           		<message>&#39;{.}&#39; is not unique collection name</message>
+       		</validation>--></validations>
+		</node>
+		<node id="lMAttributeCollWrapper" name="lMAttributeCollWrapper" label="Attributes" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMAttributeCollNode" max="-1"/>
+			</subNodes>
+		</node>
+		<node id="lMAttributeCollNode" name="lMAttributeCollNode" label="{@attName} : {@ruleAttMapping}">
+			<subNodes>
+				<subNode min="1" id="cclMAttributeCollType" max="1"/>
+			</subNodes>
+			<attributes>
+				<attribute visible="true" name="ruleAttMapping" label="Mapped Rule Column" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider" fillColumns="true">
+						<selectPath>
+					<!-- columns of standard rules from Generic rules -->
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*[@code=$current/ancestor::lMAttributeCollContainerOneEntity/cc/@ruleCode]/ruleColumnWrapper/ruleColumnNode/@name |
+					<!-- columns of standard rules from systems -->
+					$current/ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*[@code=$current/ancestor::lMAttributeCollContainerOneEntity/cc/@ruleCode]/ruleColumnWrapper/ruleColumnNode/@name |
+					<!-- columns of dq dim rules -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/*[@code=$current/ancestor::lMAttributeCollContainerOneEntity/cc/@ruleCode]/ruleColumnWrapper/ruleColumnNode/@name |
+					
+					<!-- one column per Copy rule column from Generic rules -->
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode[@code=$current/ancestor::lMAttributeCollContainerOneEntity/cc/@ruleCode]/@inputColumn | 
+				    <!-- one column per Copy rule column from sources -->
+					$current/ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode[@code=$current/ancestor::lMAttributeCollContainerOneEntity/cc/@ruleCode]/@inputColumn | 
+					<!-- one column per Copy rule column from dq dim -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/dqCopyRulesNode[@code=$current/ancestor::lMAttributeCollContainerOneEntity/cc/@ruleCode]/@inputColumn |
+					
+					<!-- columns of multi entity rule (parent) from Generic rules -->
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/multiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityParent/cc/@ruleCode]/ruleColumnWrapper/ruleColumnNode/@name |
+					<!-- columns of multi entity rule (parent) from systems -->
+					$current/ancestor::sourceSystemNode/ruleRoot/collectionRulesOptionWrapper/collectionRulesOptionNode//ruleOptionWrapper/multiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityParent/cc/@ruleCode]/ruleColumnWrapper/ruleColumnNode/@name |
+					<!-- columns of dq dim multi entity rule (parent) -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode//dqRuleOptionWrapper/dqMultiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityParent/cc/@ruleCode]/ruleColumnWrapper/ruleColumnNode/@name 
+					
+
+									
+					</selectPath>
+						<labelTemplate>{.}: {../@type}</labelTemplate>
+						<valueTemplate>{.}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+				<attribute visible="true" name="attName" label="Attribute Name" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>ancestor::lMTableNode/lMAttributeWrapper/lMAttributeNode</selectPath>
+						<labelTemplate>{@name}: {@type}</labelTemplate>
+						<valueTemplate>{@name}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+			</attributes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+					<expression>$current/ccCollType[@attType=$current/ccCollType/@ruleType]</expression>
+					<message>Attribute type does not match ({@ruleAttMapping}: {ccCollType/@ruleType}, {@attName}: {ccCollType/@attType})</message>
+				</validation><!-- validate that CopyRule has only one column mapped, not more --><!--
+      	<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>$current/cc[@attType=$current/cc/@ruleAttType]</expression>
+           <message>Attribute type does not match ({cc/@attributeName}: {cc/@attType}, {cc/@ruleAttType})</message>
+       	</validation> 
+       	--></validations>
+		</node>
+		<node id="lMAttributeChildCollWrapper" name="lMAttributeChildCollWrapper" label="Attributes" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMAttributeChildCollNode" max="-1"/>
+			</subNodes>
+		</node>
+		<node id="lMAttributeChildCollNode" name="lMAttributeChildCollNode" label="{@attName} : {@ruleAttMapping}">
+			<subNodes>
+				<subNode min="1" id="cclMAttributeCollType" max="1"/>
+			</subNodes>
+			<attributes>
+				<attribute visible="true" name="ruleAttMapping" label="Mapped Rule Column" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider" fillColumns="true">
+						<selectPath>
+					<!-- columns of multi entity rule (child) from Generic rules -->
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/multiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityChild/cc/@ruleCode]/ruleChildColumnWrapper/ruleColumnNode/@name |
+					<!-- columns of multi entity rule (child) from systems -->
+					$current/ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/multiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityChild/cc/@ruleCode]/ruleChildColumnWrapper/ruleColumnNode/@name |
+					<!-- columns of dq dim multi entity rule (child) -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode//dqRuleOptionWrapper/dqMultiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityChild/cc/@ruleCode]/ruleChildColumnWrapper/ruleColumnNode/@name 
+					
+					</selectPath>
+						<labelTemplate>{.}: {../@type}</labelTemplate>
+						<valueTemplate>{.}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+				<attribute visible="true" name="attName" label="Attribute Name" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>ancestor::lMTableNode/lMAttributeWrapper/lMAttributeNode</selectPath>
+						<labelTemplate>{@name}: {@type}</labelTemplate>
+						<valueTemplate>{@name}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+			</attributes><!--
+      <validations>
+       	<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>$current/cc[@attType=$current/cc/@ruleAttType]</expression>
+           <message>Attribute type does not match ({cc/@attributeName}: {cc/@attType}, {cc/@ruleAttType})</message>
+       	</validation>      	
+      </validations>
+      --><validations>
+				<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+					<expression>$current/ccCollType[@attType=$current/ccCollType/@ruleType]</expression>
+					<message>Attribute type does not match ({@ruleAttMapping}: {ccCollType/@ruleType}, {@attName}: {ccCollType/@attType})</message>
+				</validation><!-- validate that CopyRule has only one column mapped, not more --><!--
+      	<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>$current/cc[@attType=$current/cc/@ruleAttType]</expression>
+           <message>Attribute type does not match ({cc/@attributeName}: {cc/@attType}, {cc/@ruleAttType})</message>
+       	</validation> 
+       	--></validations>
+		</node>
+		<node id="lMAttributeRuleResultWrapper" name="lMAttributeRuleResultWrapper" label="Rule results" expanded="true">
+			<subNodes>
+				<subNode min="0" id="lMAttributeRuleResultNode" max="-1"/>
+			</subNodes>
+		</node>
+		<node id="lMAttributeRuleResultNode" name="lMAttributeRuleResultNode" label="">
+			<subNodes>
+    
+			
+			</subNodes>
+			<attributes>
+				<attribute visible="true" name="ruleAttMapping" label="Mapped Rule Column" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider" fillColumns="true">
+						<selectPath>
+					<!-- columns of multi entity rule (child) from Generic rules -->
+					ancestor::md/defaultRuleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/multiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityChild/cc/@ruleCode]/ruleChildColumnWrapper/ruleColumnNode[@type=&#39;string&#39;]/@name |
+					<!-- columns of multi entity rule (child) from systems -->
+					$current/ancestor::sourceSystemNode/ruleRoot//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/multiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityChild/cc/@ruleCode]/ruleChildColumnWrapper/ruleColumnNode[@type=&#39;string&#39;]/@name |
+					<!-- columns of dq dim multi entity rule (child) -->
+					ancestor::md/dqDimensionRoot//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode//dqRuleOptionWrapper/dqMultiEntityExpressionRulesNode[@code=$current/ancestor::lMAttributeCollContainerMultiEntityChild/cc/@ruleCode]/ruleChildColumnWrapper/ruleColumnNode[@type=&#39;string&#39;]/@name 
+					
+					</selectPath>
+						<labelTemplate>{.}</labelTemplate>
+						<valueTemplate>{.}</valueTemplate>
+					</valuesProvider>
+				</attribute>
+				<attribute visible="true" name="ruleResult" label="Rule result" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>ancestor::lMTableNode/lMAttributeWrapper/lMAttributeNode[cc/@hasRule=&#39;true&#39;]/@ruleName | ancestor::lMTableNode/lMAttributeCollContainerWrapper/*[@ruleName!=$current/ancestor::lMAttributeCollContainerMultiEntityChild/@ruleName]/@ruleName</selectPath>
+						<labelTemplate>{.} ({../cc/@ruleName}) ({../@name})</labelTemplate>
+						<valueTemplate>{.} ({../cc/@col})</valueTemplate>
+					</valuesProvider>
+				</attribute>
+			</attributes><!--
+      <validations>
+       	<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>$current/cc[@attType=$current/cc/@ruleAttType]</expression>
+           <message>Attribute type does not match ({cc/@attributeName}: {cc/@attType}, {cc/@ruleAttType})</message>
+       	</validation>      	
+      </validations>
+      --><validations>
+              <!--<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>$current/cc[@attType=$current/cc/@ruleType]</expression>
+           <message>Attribute type does not match ({@ruleAttMapping}: {cc/@ruleType}, {@attName}: {cc/@attType})</message>
+       	</validation>  -->
+      <!-- validate that CopyRule has only one column mapped, not more -->
+      <!--
+      	<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>$current/cc[@attType=$current/cc/@ruleAttType]</expression>
+           <message>Attribute type does not match ({cc/@attributeName}: {cc/@attType}, {cc/@ruleAttType})</message>
+       	</validation> 
+       	-->
+      </validations>
+		</node>
+		<node id="cclMAttributeRuleInfo" sortChildren="false" visible="false" generated="true" name="cc">
+			<attributes>
+				<attribute name="ruleCode" type="string" required="false"/>
+				<attribute name="ruleName" type="string" required="false"/>
+				<attribute name="ruleAttMapping" type="string" required="false"/>
+				<attribute name="hasRule" type="string"/>
+				<attribute name="col" type="string"/>
+			</attributes>
+		</node>
+		<node id="cclMAttributeCollInfo" sortChildren="false" visible="false" generated="true" name="cc">
+			<attributes>
+				<attribute name="ruleCode" type="string" required="false"/>
+				<attribute name="ruleName" type="string"/>
+				<attribute name="col" type="string"/>
+			</attributes>
+		</node>
+		<node id="CentralEntityNode" visibleInParent="false" sortChildren="false" visible="false" generated="true" name="centralEntityNode">
+			<attributes>
+				<attribute visible="false" name="centralEntity" type="boolean"/>
+			</attributes>
+		</node>
+		<node id="cclMAttributeCollType" visibleInParent="false" visible="false" generated="true" name="ccCollType">
+			<attributes>
+				<attribute name="ruleType" type="string"/>
+				<attribute name="attType" type="string"/>
+			</attributes>
+		</node>
+		<node id="cclMForeignKeyNode" visibleInParent="false" visible="false" generated="true" name="cc">
+			<attributes>
+				<attribute name="childType" type="string"/>
+				<attribute name="parentType" type="string"/>
+			</attributes>
+		</node>
+	</nodes>
+</metametadata-library>

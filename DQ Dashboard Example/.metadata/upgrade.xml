@@ -1,0 +1,61 @@
+<upgrades>
+  <upgrade fromVersion="9.0.0" toVersion="10.0.0">
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/9xx_1000.xsl"/>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.CopyFile" filePattern="Files/components/*.comp" to="Files/engine/rules" namePatternFrom ="^.*__" namePatternTo ="" />
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.DeleteFile" filePattern="Files/_run" /> 
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.DeleteFile" filePattern="Files/components" />
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.DeleteFile" filePattern="Files/plans" />
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.DeleteFile" filePattern="Files/workflows" />
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.FileXslTransformer" filePattern="Files/engine/rules/*" transformation="upgrades/filesUpgrade.xsl" />         
+    </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.0.0" toVersion="10.1.0" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/1000_1010.xsl"/>
+     </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.1.0" toVersion="10.2.0" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/1010_1020.xsl"/>
+     </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.2.0" toVersion="10.2.1" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/copy_metadata.xsl"/>
+     </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.2.1" toVersion="10.2.2" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/1021_1022.xsl"/>
+     </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.2.2" toVersion="10.3.0" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/copy_metadata.xsl"/>
+     </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.3.0" toVersion="10.4.0" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/copy_metadata.xsl"/>
+     </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.4.0" toVersion="10.5.0" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/1040_1050.xsl"/>
+     </transformers>
+  </upgrade>
+  <upgrade fromVersion="10.5.0" toVersion="11.0.0" >
+    <transformers>
+      <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/copy_metadata.xsl"/>
+     </transformers>
+  </upgrade>
+<!-- 
+   <upgrade fromVersion="10.3.0" toVersion="10.4.0" >
+    <transformers> -->
+    	<!--  use this "empty" upgrade template for each upcoming version, even there are no changes in metadata structure - this approach allows to upgrade MMD, xslt and other important parts of the model project   -->
+      	<!-- <transformer class="com.ataccama.ame.ui.upgrade.transform.MetadataXslTransformer"  transformation="upgrades/copy_metadata.xsl"/>
+    </transformers>
+  </upgrade>
+  -->
+</upgrades>

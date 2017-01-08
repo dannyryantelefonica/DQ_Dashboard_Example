@@ -1,0 +1,729 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<metametadata-library>
+<nodes>
+  <node id="ruleAggregatingOrderByWrapper" name="ruleAggregatingOrderByWrapper" label="Aggregation Order" expanded="true">
+      <subNodes>
+        
+      
+      
+			
+			<subNode min="0" id="ruleAggregatingOrderByNode" max="-1"/>
+			</subNodes>
+    <description>List of Aggregation Order expressions, which specifies how to choose the one best child record. Expressions will be evaluated in the specified order. If the engine cannot choose the best value, it will move to the next expression. </description>
+		</node>
+    <node id="ruleAggregatingOrderByNode" name="ruleAggregatingOrderByNode" label="{@name}">
+      <attributes>
+     	 <attribute name="expression" label="Expression" type="expression" required="true" returnType="INTEGER">
+					
+				
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources> 
+        <source name="column"> 
+            <selectPath>../../../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                               
+    </sources> 
+  </expressionProvider>
+				<description>Specifies the expression evaluated to a value used in sorting. May contain aggregating functions.</description>
+				</attribute>
+        <attribute name="nullsFirst" label="Nulls First" type="boolean" required="true" defaultValue="false">
+					<description>If checked, NULL values will be placed first in the list.</description>
+				</attribute>
+      	<attribute name="orderDescending" label="Descending Order" type="boolean" required="true" defaultValue="false">
+					<description>If checked, resulting values will be placed in descending order.</description>
+				</attribute>
+      </attributes>
+    </node>
+
+  <node id="ruleChildColumnWrapper" name="ruleChildColumnWrapper" label="Input Columns (Child Entity)" expanded="true">
+      <subNodes>
+        
+      
+      <subNode min="0" id="ruleColumnNode" max="-1"/>
+			</subNodes>
+    <description>Child attribute names with their data types.</description>
+		</node>
+
+  <node id="ruleColumnWrapper" name="ruleColumnWrapper" label="Input Columns" expanded="true">
+      <subNodes>
+        
+      
+      
+			
+			<subNode min="0" id="ruleColumnNode" max="-1"/>
+			</subNodes>
+    <description>Attribute names with their data type used for the rules.</description>
+		</node>
+    <node id="ruleColumnNode" name="ruleColumnNode" label="{@name}">
+      <attributes>
+        <attribute name="name" label="Name" type="string" required="true">
+					<description>Name of the column, where the value used for rule is stored.
+&lt;b/&gt;NOTE:&lt;/b&gt; It is the name of internal attribute. The attribute needs to be mapped to real atribute defined in the Technical Model.</description>
+				</attribute>
+      <attribute name="type" label="DQC Data Type" type="enum" required="true" enumValues="string,integer,datetime,day,long,boolean,float" defaultValue="string">
+					<description>Data type of the value used for the rule.</description>
+				</attribute>
+      </attributes>
+      	<validations>
+			<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  				<selectPath>@name</selectPath>
+  				<valueExpr>(?!(^(is|IS|Is|iS|in|IN|In|iN|not|NOT|Not|NOt|nOT|noT)$)).*</valueExpr>
+  				<message>&#39;{.}&#39; is reserved string for DQC expression and cannot be used as Column name</message>
+			</validation>
+			<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  				<selectPath>@name</selectPath>
+  				<valueExpr>[\S]*</valueExpr>
+  			<message>Column name cannot contain whitespaces</message>
+			</validation>
+			<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  				<selectPath>@name</selectPath>
+  				<valueExpr>^[^0-9].*</valueExpr>
+  			<message>Column name cannot start with number</message>
+			</validation>
+		</validations>
+    </node>
+  <node id="ruleExplanationWrapper" name="ruleExplanationWrapper" label="Reasons for Invalidity" expanded="true">
+      <subNodes>
+       
+      
+			
+			
+			<subNode min="0" id="ruleExplanationNode" max="-1"/>
+			</subNodes>
+    
+    
+    <description>List of invalidity reason names with the description of reason, why is the value invalid.</description>
+		</node>
+    
+    <node id="ruleExplanationNode" name="ruleExplanationNode" label="Reason for Invalidity">
+      <attributes>
+        <attribute name="code" label="Reason" type="string" required="true">
+					<description>Invalidity reason name for the reason, why is the value invalid. It is shown in the DQD web application.</description>
+				</attribute>
+        
+      
+				
+			
+				<attribute name="description" label="Description" type="string">
+					<description>Description of why is the value invalid.</description>
+				</attribute>
+			</attributes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+      <validations>
+      	<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>(?!^VALID$).*</valueExpr>
+  			<message>&#39;VALID&#39; is reserved string indicating valid records - cannot be used as explanation for invalid records</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>(?!^OTHER$).*</valueExpr>
+  			<message>&#39;OTHER&#39; is reserved string indicating invalid records with not specified explanation - cannot be used as explanation</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>[\S]*</valueExpr>
+  			<message>Explanation name cannot contain whitespaces</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../ruleExplanationNode/@code</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for explanation name</message>
+		</validation>
+      </validations>
+    </node>	
+	
+		<node id="planRulesNode" visibleInParent="true" inherits="ruleNode" icon="icons/form_blue.png" visible="true" name="planRulesNode" label="{@name} (Plan Rule)" explorerLeaf="true" expanded="false">
+			<subNodes>	
+			
+				
+			
+				
+			<subNode min="1" id="ruleColumnWrapper" max="1"/>
+				<subNode min="1" id="ruleExplanationWrapper" max="1"/>
+			</subNodes>				
+		<editors>						
+			<editor class="com.ataccama.ame.core.editors.FileOpener" label="Open Rule component" fileNameTemplate="Files/engine/rules/{@code}.comp"/>
+			</editors>
+		<attributes>
+				<attribute visible="false" name="type" type="string" defaultValue="PlanRule"/>
+			
+			<attribute visible="false" name="planFile" label="Plan File" type="file" required="false"/>
+			
+			
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Validity Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Validity Rule"/>
+			</attributes>
+		<generators>
+				<gen source="." class="com.ataccama.ame.core.generators.XsltPlanFileGenerator" templatePath="xslt/gen_rules_plan.xsl" fileNameTemplate="Files/engine/rules/{@code}.comp">
+
+				</gen>
+			</generators>
+
+		</node>
+		<node id="expressionRulesNode" visibleInParent="true" inherits="ruleNode" icon="icons/form_yellow.png" visible="true" name="expressionRulesNode" label="{@name} (Expression Rule)" explorerLeaf="true">
+			<subNodes>
+				
+				
+			
+				
+			
+				
+			
+				
+			<subNode min="1" id="ruleExpressionWrapper" max="1"/>
+				<subNode min="1" id="ruleColumnWrapper" max="1"/>
+			</subNodes>	
+		<attributes>
+				<attribute visible="false" name="type" type="string" defaultValue="ExpressionRule"/>
+				
+			
+			
+			<attribute name="validity" label="Validity Expression" type="expression">
+					
+				
+				
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources> 
+        <source name="column"> 
+            <selectPath>../ruleColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                               
+    </sources> 
+  </expressionProvider>
+				
+				<description>&lt;b&gt;Validity Expression&lt;/b&gt; is used as a rule passing condition. This expression implemented like a boolean DQC expression evaluates attributes specified in the &lt;b&gt;Input Columns&lt;/b&gt; section.</description>
+				</attribute>
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Validity Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Validity Rule"/>
+			</attributes>
+		<editors>
+				
+			</editors>
+		</node>
+		
+	
+	<node id="multiEntityExpressionRulesNode" visibleInParent="true" inherits="ruleNode" icon="icons/form_green.png" sortChildren="false" visible="true" name="multiEntityExpressionRulesNode" label="{@name} (Multi Entity Expression Rule)" explorerLeaf="true">
+			<subNodes>
+				
+					
+			
+				
+				
+				
+			
+				
+				
+				
+			
+				
+				
+				
+			<subNode min="1" id="ruleColumnWrapper" max="1"/>
+				<subNode min="1" id="ruleChildColumnWrapper" max="1"/>
+				<subNode min="1" id="ruleMultiEntityExpressionWrapper" max="1"/>
+				<subNode min="1" id="ruleAggregatingOrderByWrapper" max="1"/>
+			</subNodes>	
+		<attributes>
+				<attribute visible="false" name="type" type="string" required="false" defaultValue="MultiEntityExpressionRule"/>
+				<attribute name="validity" label="Validity Expression" type="expression" required="true" returnType="BOOLEAN">				
+				
+				
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources>
+        <source dotSource="parent" name="parent">
+            <selectPath>../ruleColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>  
+        <source dotSource="best" name="best">
+            <selectPath>../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>       
+        <source name="column" aggregated="true">
+            <selectPath>../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                             
+    </sources> 
+  </expressionProvider>
+				<description>Rule passing condition. Attributes from parent entity are identified by prefix parent (&lt;kbd&gt;parent.[parent_column]&lt;/kbd&gt;). Attributes from child entity can be used either in aggregation functions or outside or the aggregating scope as best selected record according to Aggregation order (&lt;kbd&gt;best.[child_column]&lt;/kbd&gt;).</description>
+				</attribute>
+			<attribute name="acceptanceCondition" label="acceptanceCondition" type="expression" returnType="BOOLEAN">
+					
+				
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources>       
+        <source name="column">
+            <selectPath>../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                             
+    </sources> 
+  </expressionProvider>
+				<description>A boolean expression applied to attributes specified in the &lt;b&gt;Input Columns (Child Entity)&lt;/b&gt; section that will perform initial filtering of records from the child entity. Only records passing this condition are consider in rule evaluation.</description>
+				</attribute>			
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Validity Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Validity Rule"/>
+			</attributes>
+		<editors>
+				
+			</editors>
+				
+		</node>
+		
+	
+	
+	
+		<node id="copyRulesNode" visibleInParent="true" inherits="ruleNode" icon="icons/form_red.png" visible="true" name="copyRulesNode" label="{@name} (Copy Rule)" explorerLeaf="true">
+			<subNodes>
+				
+			
+			
+			
+			
+			
+			
+			
+			
+			<subNode min="1" id="ruleExplanationWrapper" max="1"/>
+			</subNodes>	
+		<attributes>
+				<attribute visible="false" name="type" type="string" defaultValue="CopyRule"/>
+				
+			
+				
+			<attribute visible="false" name="inputColumn" type="string" defaultValue="Input column containing Explanation"/>
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Validity Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Validity Rule"/>
+			<attribute visible="false" name="inputColumnType" type="string" defaultValue="string"/>
+			</attributes>
+		<editors>
+				
+			</editors>
+		</node>		
+	
+	
+	<node id="ruleExpressionWrapper" name="ruleExpressionWrapper" label="Reasons for Invalidity" expanded="true">
+			<subNodes>
+			
+			
+			<subNode min="0" id="ruleExpressionNode" max="-1"/>
+			</subNodes>
+		<attributes>
+		</attributes>
+		<description>List of invalidity reason names with the description of reason, why is the value invalid and validity expression.</description>
+		</node>
+	
+	<node id="ruleExpressionNode" name="ruleExpressionNode" label="Expressions">
+			<attributes>
+				<attribute name="code" label="Reason" type="string" required="true">
+					<description>Expression code for the reason, why is the value invalid. It is showned in the DQD web application.</description>
+				</attribute>
+				<attribute name="expression" label="Expression" type="expression" required="true">
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources> 
+        <source name="column"> 
+            <selectPath>../../../ruleColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                               
+    </sources> 
+  </expressionProvider>
+				<description>&lt;b&gt;Validity expression&lt;/b&gt; is a condition, which decides about the invalidity reason name assignment.</description>
+				</attribute>
+			
+			<attribute name="description" label="Description" type="string">
+					<description>Description of why is the value invalid.</description>
+				</attribute>
+			</attributes>
+			      <validations>
+      	<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>(?!^VALID$).*</valueExpr>
+  			<message>&#39;VALID&#39; is reserved string indicating valid records - cannot be used as explanation for invalid records</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>(?!^OTHER$).*</valueExpr>
+  			<message>&#39;OTHER&#39; is reserved string indicating invalid records with not specified explanation - cannot be used as explanation</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>[\S]*</valueExpr>
+  			<message>Explanation name cannot contain whitespaces</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../ruleExpressionNode/@code</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for explanation name</message>
+		</validation>
+      </validations>
+		</node>
+		
+
+
+	<node id="ruleMultiEntityExpressionWrapper" name="ruleMultiEntityExpressionWrapper" label="Reasons for Invalidity" expanded="true">
+			<subNodes>
+			
+			
+			<subNode min="0" id="ruleMultiEntityExpressionNode" max="-1"/>
+			</subNodes>
+		<attributes>
+		</attributes>
+		<description>List of invalidity reason name with the description of reason, why is the value invalid and validity expression.</description>
+		</node>
+	
+	<node id="ruleMultiEntityExpressionNode" name="ruleMultiEntityExpressionNode" label="Expressions">
+			<attributes>
+				<attribute name="code" label="Reason" type="string" required="true">
+					<description>Expression code for the reason, why is the value invalid. It is showned in the DQD web application.</description>
+				</attribute>
+				<attribute name="expression" label="Expression" type="expression" required="true" returnType="BOOLEAN">
+				
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources>
+        <source dotSource="parent" name="parent">
+            <selectPath>../../../ruleColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>  
+        <source dotSource="best" name="best">
+            <selectPath>../../../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>       
+        <source name="column" aggregated="true">
+            <selectPath>../../../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                             
+    </sources> 
+  </expressionProvider>
+				<description>This expression is a condition, which decides about the invalidity reason name assignment.</description>
+				</attribute>
+			
+			<attribute name="description" label="Description" type="string">
+					<description>Description of why is the value invalid.</description>
+				</attribute>
+			</attributes>
+			
+		      <validations>
+      	<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>(?!^VALID$).*</valueExpr>
+  			<message>&#39;VALID&#39; is reserved string indicating valid records - cannot be used as explanation for invalid records</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>(?!^OTHER$).*</valueExpr>
+  			<message>&#39;OTHER&#39; is reserved string indicating invalid records with not specified explanation - cannot be used as explanation</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  			<selectPath>@code</selectPath>
+  			<valueExpr>[\S]*</valueExpr>
+  			<message>Explanation name cannot contain whitespaces</message>
+		</validation>
+		<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../ruleMultiEntityExpressionNode/@code</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for explanation name</message>
+		</validation>
+      </validations>
+		</node>
+	
+		
+		
+	<node id="ruleNode" abstract="true" visibleInParent="true" name="ruleNode" label="{@name}" expanded="false">
+			<attributes>
+				
+			
+			<attribute name="code" label="ID" type="string" required="true">
+					<description>Internal technical identifier of the rule. Not visible in the DQD web application.</description>
+				</attribute>
+			<attribute name="name" label="Name" type="string">
+					<description>Business name of the rule as seen in the DQD web application.</description>
+				</attribute>
+				
+			
+			
+			<attribute name="description" label="Description" type="text">
+					<description>Optional description of the rule&#39;s purpose.</description>
+				</attribute>
+			</attributes>
+		<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+			<editor class="com.ataccama.ame.core.editors.DeleteChild" label="Delete Rule"/>
+			</editors>
+			
+
+       		
+		</node>
+	
+	
+	
+	
+	
+	
+	
+		
+	<node id="dqDimensionRuleNode" abstract="true" icon="icons/folder2_yellow.png" sortChildren="true" name="dqDimRule" label="Dimension Rules">
+			<subNodes>
+				
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+				
+			
+			</subNodes>
+		<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+			
+			<editor class="com.ataccama.ame.core.editors.DeleteChild" label="Delete Rule"/>
+			</editors>
+		<attributes>
+				
+			<attribute name="code" label="ID" type="string" required="true">
+					<description>Technical name of the rule used as the internal identifier. Not visible in the DQD web application.</description>
+				</attribute>
+				<attribute name="name" label="Name" type="string">
+					<description>Business name of the rule shown in the DQD web application.</description>
+				</attribute>
+				<attribute name="description" label="Description" type="string">
+					<description>Optional explanation of the rule&#39;s purpose.</description>
+				</attribute>
+				
+			</attributes>
+		<generators>
+
+			<gen class="com.ataccama.ame.core.generators.PlaceholderGenerator">
+			<!-- Generator does not generate any file, it merely causes the UI to show the Generate... action. -->
+		</gen>
+			</generators>
+		
+		</node>
+	
+	
+	<node id="dqExpressionRulesNode" inherits="dqDimensionRuleNode" icon="icons/form_yellow.png" name="dqExpressionRulesNode" label="{@name} (Expression Rule)" explorerLeaf="true">
+			<subNodes>
+								
+			
+				
+			
+				
+			
+				
+			<subNode min="1" id="dqRuleResultWrapper" max="1"/>
+				<subNode min="1" id="ruleColumnWrapper" max="1"/>
+			</subNodes>
+		<attributes>
+				<attribute visible="false" name="type" type="string" defaultValue="ExpressionRule"/>
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Dimension Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Dimension Rule"/>
+			</attributes>
+		</node>
+	
+	<node id="dqMultiEntityExpressionRulesNode" visibleInParent="true" inherits="dqDimensionRuleNode" icon="icons/form_green.png" sortChildren="false" visible="true" name="dqMultiEntityExpressionRulesNode" label="{@name} (Multi Entity Expression Rule)" explorerLeaf="true">
+			<subNodes>
+				
+			
+				
+				
+				
+			
+				
+				
+			
+				
+				
+				
+			
+				
+				
+				
+			
+				
+				
+				
+			<subNode min="1" id="ruleColumnWrapper" max="1"/>
+				<subNode min="1" id="dqRuleMultiEntityResultWrapper" max="1"/>
+				<subNode min="1" id="ruleAggregatingOrderByWrapper" max="1"/>
+				<subNode min="1" id="ruleChildColumnWrapper" max="1"/>
+			</subNodes>	
+		<attributes>
+				<attribute visible="false" name="type" type="string" defaultValue="MultiEntityExpressionRule"/>
+				
+			<attribute name="acceptanceCondition" label="acceptanceCondition" type="expression" required="false" returnType="BOOLEAN">
+					
+				
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources>       
+        <source name="column">
+            <selectPath>../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                             
+    </sources> 
+  </expressionProvider>
+				<description>A boolean expression applied to attributes specified in the &lt;b&gt;Input Columns (Child Entity)&lt;/b&gt; section that will perform initial filtering of values from the child entity.</description>
+				</attribute>			
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Dimension Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Dimension Rule"/>
+			</attributes>
+		<editors>
+				
+			</editors>
+		</node>
+	<node id="dqPlanRulesNode" inherits="dqDimensionRuleNode" icon="icons/form_blue.png" name="dqPlanRulesNode" label="{@name} (Plan Rule)" explorerLeaf="true">
+			<subNodes>
+			
+				
+			
+				
+			<subNode min="1" id="ruleColumnWrapper" max="1"/>
+			</subNodes>
+		<attributes>
+				<attribute visible="false" name="type" type="string" defaultValue="PlanRule"/>
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Dimension Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Dimension Rule"/>
+			</attributes>
+		<generators>
+				<gen source="." class="com.ataccama.ame.core.generators.XsltPlanFileGenerator" templatePath="xslt/gen_rules_plan.xsl" fileNameTemplate="Files/engine/rules/{@code}.comp">
+					<parameters>
+						<param source="ancestor::dqDimensionNode" name="dqDimensionNode"/>
+					</parameters>	
+				</gen>
+			</generators>
+		<editors>
+				<editor class="com.ataccama.ame.core.editors.FileOpener" label="Open Rule component" fileNameTemplate="Files/engine/rules/{@code}.comp"/>
+			</editors>
+		</node>
+		<node id="dqCopyRulesNode" inherits="dqDimensionRuleNode" icon="icons/form_red.png" name="dqCopyRulesNode" label="{@name} (Copy Rule)" explorerLeaf="true">
+			<subNodes>
+				
+			
+			
+			
+			
+			
+			</subNodes>
+		<attributes>
+				<attribute visible="false" name="type" type="string" defaultValue="CopyRule"/>		
+			<attribute visible="false" name="inputColumn" type="string" defaultValue="Input column containing Explanation"/>
+			<attribute visible="false" name="ruleType" type="string" defaultValue="Dimension Rule"/>
+			<attribute visible="false" name="ruleTypeLabel" type="string" defaultValue="Dimension Rule"/>
+			<attribute visible="false" name="inputColumnType" type="string" defaultValue="string"/>
+			</attributes>
+		</node>
+	<node id="dqRuleResultWrapper" name="dqRuleResultWrapper" label="Results" expanded="true">
+			<subNodes>
+				
+			<subNode min="0" id="dqRuleResultNode" max="-1"/>
+			</subNodes>
+		<description>Result set of the rules.</description>
+		</node>
+		<node id="dqRuleResultNode" name="dqRuleResultNode" label="Results">
+			<attributes>
+				<attribute name="code" label="ID" type="list" required="true">
+					
+				
+				<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider" fillColumns="true">
+    <selectPath>ancestor::dqDimensionNode/dqDimensionResultWrapper/dqDimensionResultNode/@id</selectPath>
+  </valuesProvider>
+				<description>Identifier of a rule result.</description>
+				</attribute>
+			<attribute name="expression" label="Expression" type="expression" required="true">
+					<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources> 
+        <source name="column"> 
+            <selectPath>../../../ruleColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                               
+    </sources> 
+  </expressionProvider>
+				<description>Boolean expression here is technical implementation of the rule.</description>
+				</attribute>
+			</attributes>
+		</node>
+
+		
+	<node id="dqRuleMultiEntityResultWrapper" name="dqRuleMultiEntityResultWrapper" label="Results" expanded="true">
+			<subNodes>
+				
+			<subNode min="0" id="dqRuleMultiEntityResultNode" max="-1"/>
+			</subNodes>
+		</node>
+		<node id="dqRuleMultiEntityResultNode" name="dqRuleMultiEntityResultNode" label="Results">
+			<attributes>
+				<attribute name="code" label="Result" type="list" required="true">
+					
+				
+				<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider" fillColumns="true">
+    <selectPath>ancestor::dqDimensionNode/dqDimensionResultWrapper/dqDimensionResultNode/@id</selectPath>
+  </valuesProvider>
+				<description>Identifier of a rule result.</description>
+				</attribute>
+			<attribute name="expression" label="Expression" type="expression" required="true">
+					
+				<expressionProvider class="com.ataccama.ame.core.expressions.ExpressionPathValuesProvider"> 
+    <sources>
+        <source dotSource="parent" name="parent">
+            <selectPath>../../../ruleColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>  
+        <source dotSource="best" name="best">
+            <selectPath>../../../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>       
+        <source name="column" aggregated="true">
+            <selectPath>../../../ruleChildColumnWrapper/ruleColumnNode</selectPath> 
+            <nameTemplate>{@name}</nameTemplate> 
+            <dataTypeTemplate>{@type}</dataTypeTemplate> 
+            <labelTemplate>{@name} ({@type})</labelTemplate> 
+        </source>                             
+    </sources> 
+  </expressionProvider>
+				<description>Boolean expression here is technical implementation of the rule.</description>
+				</attribute>
+			</attributes>
+		</node>
+	
+	
+	
+	
+	
+	
+	
+	</nodes>
+</metametadata-library>

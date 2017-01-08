@@ -1,0 +1,9 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<manifest>
+  <name>DQ Dashboard</name>
+  <uid>815034db-42a0-a83c-000-22f95686d318</uid>
+  <version>10.5.0.ga-2016-06-24</version>
+  <licenseOptions>
+    <option>Meta/DQD</option>
+  </licenseOptions>
+</manifest>

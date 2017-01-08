@@ -1,0 +1,12 @@
+delimiter "<>";
+main(root) ::= <<
+@echo off
+
+<#loop $root/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode[@enable='true']>
+call "%DQC_HOME%\bin\run_java.bat" com.ataccama.dqd.engine.DqdProcessor -rt ../etc/dqd.runtimeConfig -config ../etc/dqd-config.xml process "<@code>"
+<#endloop>
+
+if not errorlevel 1 goto done
+pause "Processing failed. Press any key when ready"
+:done
+>>

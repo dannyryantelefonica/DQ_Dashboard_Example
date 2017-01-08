@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<metametadata-library>
+	<nodes>
+
+  <node id="masterEntityRoot" icon="icons/branch_element.png" sortChildren="false" name="masterEntityRoot" label="Master Entities">
+      <subNodes>
+        
+      
+      
+      
+      
+      <subNode min="1" id="masterEntityWrapper" max="1"/>
+      </subNodes>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+    </node>
+    <node id="masterEntityWrapper" sortChildren="false" name="masterEntityWrapper" label="Sub-Entities" expanded="true">
+      <subNodes>
+      
+      
+      
+      <subNode min="0" id="masterEntityNode" max="-1"/>
+			</subNodes>
+    <description>List of other master entities.</description>
+		</node>
+    
+    
+    <node id="masterEntityNode" icon="icons/branch_element.png" sortChildren="false" name="masterEntityNode" label="{@name}" explorerLeaf="false">
+      <subNodes>
+      	
+        
+      
+				
+			
+				
+			<subNode min="1" id="masterEntityRelationshipWrapper" max="1"/>
+				<subNode min="1" id="masterEntityWrapper" max="1"/>
+			</subNodes>
+    <attributes>
+        <attribute name="code" label="ID" type="string" required="true">
+					<description>Internal identifier of the master entity. Not visible in the DQD web application.</description>
+				</attribute>
+				<attribute name="name" label="Name" type="string" required="true">
+					<description>Name of the master entity as seen in the DQD web application.</description>
+				</attribute>
+      </attributes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+      <validations>
+      <validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  		<selectPath>../masterEntityNode/@code</selectPath>
+  		<message>&#39;{.}&#39; is not unique value for attribute &#39;ID&#39;</message>
+	  </validation>
+	  <validation class="com.ataccama.ame.core.validations.MDPathValidation">
+           <expression>./masterEntityRelationshipWrapper/masterEntityRelationshipNode/@name</expression>
+           <message>Entity {@name} must have at least one Constitient Business Entity assigned.</message>
+       </validation>
+	  </validations>
+    </node>
+    <node id="masterEntityRelationshipWrapper" sortChildren="false" name="masterEntityRelationshipWrapper" label="Constituent Business Entities" expanded="true">
+      <subNodes>
+      
+      
+      
+			
+			<subNode min="0" id="masterEntityRelationshipNode" max="-1"/>
+			</subNodes>
+    
+		<description>List of the business entities whose results will be summed up to create the master entity: one entity per line. &lt;br /&gt;
+Since master entities contain business entities from multiple source systems, entity names are defined in a structured format.
+Naming convention possesses three components:
+&lt;b&gt;[Source System Name].[Business Entity Name].[Sub-Entity Name]&lt;/b&gt;
+Eg. &lt;i&gt;CIF.retail&lt;/i&gt; or &lt;i&gt;CIF.retail.Contract&lt;/i&gt;</description>
+		</node>
+    <node id="masterEntityRelationshipNode" icon="icons/note.png" sortChildren="false" name="masterEntityRelationshipNode" label="{@name}">
+      <attributes>
+        <attribute name="name" label="Name" type="list" required="true">
+          
+        
+        
+        
+        
+				<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider" fillColumns="true">
+	<selectPath>ancestor::md/sourceSystemRoot//entityRoot|ancestor::md/sourceSystemRoot//entityContainer</selectPath>
+	<labelTemplate>{ancestor::sourceSystemNode/@code}.{ancestor::modelNode/@code}{ccAggregation/@aggregationCode}</labelTemplate>
+	<valueTemplate>{ancestor::sourceSystemNode/@code}.{ancestor::modelNode/@code}{ccAggregation/@aggregationCode}</valueTemplate>
+</valuesProvider>
+				</attribute>
+      </attributes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+    <subNodes>
+        
+      
+      
+      
+      
+			
+			<subNode min="1" id="ccMasterEntityRelationshipInfo" max="1"/>
+			</subNodes>
+      <validations>
+      <validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  		<selectPath>../masterEntityRelationshipNode/@name</selectPath>
+  		<message>&#39;{.}&#39; is not unique value for attribute &#39;name&#39;</message>
+		</validation>
+       </validations>
+    </node>
+  
+
+  
+  <node id="ccMasterEntityRelationshipInfo" visible="false" generated="true" name="cc">
+      <attributes>
+        <attribute name="sourceSystemName" type="string"/>
+        
+        
+      </attributes>
+    </node>
+  
+    
+
+	
+	</nodes>
+
+	
+</metametadata-library>

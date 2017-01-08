@@ -1,0 +1,208 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<purity-config xmlns:comm="http://www.ataccama.com/purity/comment" version="10.5.0.ga-2016-06-24">
+	<component-id>email_validate_simple</component-id>
+	<icon type="5">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</icon>
+	<references/>
+	<component-mappings>
+		<propertyMappings/>
+	</component-mappings>
+
+<!-- (Add Columns) --><step id="Add Columns" className="com.ataccama.dqc.tasks.flow.AlterFormat" disabled="false" mode="NORMAL">
+		<properties>
+			<addedColumns>
+				<addedColumn name="std_email" type="STRING">
+					<comm:comment>Standardized value of the email address - contains only valid values.</comm:comment>
+				</addedColumn>
+				<addedColumn name="std_name" type="STRING">
+					<comm:comment>Column that stores the email address owner if recognised.</comm:comment>
+				</addedColumn>
+				<addedColumn name="out_email" type="STRING">
+					<comm:comment>The best existing value of the email address. More details in the technical description (step 3).</comm:comment>
+				</addedColumn>
+				<addedColumn name="exp_email" type="STRING">
+					<comm:comment>Explanations if invalid.</comm:comment>
+				</addedColumn>
+				<addedColumn name="sco_email" type="INTEGER">
+					<comm:comment>Data quality score for email address value.</comm:comment>
+				</addedColumn>
+			</addedColumns>
+			<removedColumns/>
+		</properties>
+		<visual-constraints bounds="240,120,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Add Columns" endpoint="out"/>
+		<target step="Validate_email" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Remove_internal_columns) --><step id="Remove_internal_columns" className="com.ataccama.dqc.tasks.flow.AlterFormat" disabled="false" mode="NORMAL">
+		<properties>
+			<addedColumns/>
+			<removedColumns>
+				<columnRef name="in_email"/>
+			</removedColumns>
+			<comm:comment>Removes internal columns.</comm:comment>
+		</properties>
+		<visual-constraints bounds="240,408,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Remove_internal_columns" endpoint="out"/>
+		<target step="out" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Set_out_values) --><step id="Set_out_values" className="com.ataccama.dqc.tasks.expressions.ColumnAssigner" disabled="false" mode="NORMAL">
+		<properties>
+			<assignments>
+				<assignment expression="nvl(std_email, in_email)" column="out_email">
+					<scorer>
+						<scoringEntries>
+							<scoringEntry score="0" explainAs="CA_CHANGED" explain="false" key="CA_CHANGED"/>
+						</scoringEntries>
+					</scorer>
+				</assignment>
+			</assignments>
+			<comm:comment>set output values with prefix -out as best existing values</comm:comment>
+		</properties>
+		<visual-constraints bounds="240,336,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Set_out_values" endpoint="out"/>
+		<target step="Remove_internal_columns" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Set_score_and_explanations) --><step id="Set_score_and_explanations" className="com.ataccama.dqc.tasks.scoring.SimpleScoring" disabled="false" mode="NORMAL">
+		<properties defaultScoreColumn="sco_email" defaultExplainColumn="exp_email">
+			<scoringCases>
+				<scoringCase condition="in_email is not std_email and std_email is not null" description="Email hase been cleansed. (removed &lt;&gt; brackets, or removed string before &lt;email&gt;" explanation="&#39;EMAIL_CLEANSED&#39;" score="1"/>
+			</scoringCases>
+			<comm:comment>Set score and explanation</comm:comment>
+		</properties>
+		<visual-constraints bounds="240,264,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Set_score_and_explanations" endpoint="out"/>
+		<target step="Set_out_values" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (Validate_email) --><step id="Validate_email" className="com.ataccama.dqc.tasks.clean.ValidateEmailAlgorithm" disabled="false" mode="NORMAL">
+		<properties outEmail="std_email" outName="std_name" tldLookupFileName="../../../data/ext/lkp/___email_tld.lkp" in="in_email">
+			<scorer explanationColumn="exp_email" scoreColumn="sco_email">
+				<scoringEntries>
+					<scoringEntry score="10000000" explainAs="EMAIL_EMPTY" explain="true" key="EML_NULL"/>
+					<scoringEntry score="10000" explainAs="EMAIL_INVALID" explain="true" key="EML_ADDRESS"/>
+					<scoringEntry score="10000" explainAs="EMAIL_INVALID" explain="true" key="EML_TLD"/>
+					<scoringEntry score="10000" explainAs="EMAIL_AMBIGUOUS_DOMAIN" explain="true" key="EML_AMBIGUOUS_DOMAIN"/>
+				</scoringEntries>
+			</scorer>
+			<comm:comment>Validate email</comm:comment>
+		</properties>
+		<visual-constraints bounds="240,192,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="Validate_email" endpoint="out"/>
+		<target step="Set_score_and_explanations" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (in) --><step id="in" className="com.ataccama.dqc.tasks.common.usersteps.io.InputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<columns>
+				<columnDef name="in_email" type="STRING">
+					<comm:comment>Source email address. It may contain a person&#39;s name if the email address is enclosed in &lt;&gt; brackets.</comm:comment>
+				</columnDef>
+			</columns>
+			<shadowColumns/>
+		</properties>
+		<visual-constraints bounds="240,48,-1,-1" layout="vertical"/>
+	</step>
+	<connection className="com.ataccama.dqc.model.elements.connections.StandardFlowConnection" disabled="false">
+		<source step="in" endpoint="out"/>
+		<target step="Add Columns" endpoint="in"/>
+		<visual-constraints>
+			<bendpoints/>
+		</visual-constraints>
+	</connection>
+
+
+
+<!-- (out) --><step id="out" className="com.ataccama.dqc.tasks.common.usersteps.io.OutputStep" disabled="false" mode="NORMAL">
+		<properties>
+			<requiredColumns>
+				<requiredColumn name="std_email" type="STRING">
+					<comm:comment>Standardized value of the email address - contains only valid values.</comm:comment>
+				</requiredColumn>
+				<requiredColumn name="std_name" type="STRING">
+					<comm:comment>Column that stores the email address owner if recognised.</comm:comment>
+				</requiredColumn>
+				<requiredColumn name="out_email" type="STRING">
+					<comm:comment>The best existing value of the email address. More details in the technical description (step 3).</comm:comment>
+				</requiredColumn>
+				<requiredColumn name="exp_email" type="STRING">
+					<comm:comment>Explanations if invalid.</comm:comment>
+				</requiredColumn>
+				<requiredColumn name="sco_email" type="INTEGER">
+					<comm:comment>Data quality score for email address value.</comm:comment>
+				</requiredColumn>
+			</requiredColumns>
+		</properties>
+		<visual-constraints bounds="240,480,-1,-1" layout="vertical"/>
+	</step>
+
+
+
+<modelComment bounds="-96,264,337,49" borderColor="183,183,0" backgroundColor="128,255,255" foregroundColor="51,51,51">2. Set score and explanations (which are not 
+covered in &quot;Validate Email&quot; step)</modelComment>
+
+
+
+<modelComment bounds="-96,192,337,49" borderColor="183,183,0" backgroundColor="128,255,255" foregroundColor="51,51,51">1. Validate/parse email with check TLD
+(top level domain) and set std values</modelComment>
+
+
+
+<modelComment bounds="-96,336,385,61" borderColor="183,183,0" backgroundColor="128,255,255" foregroundColor="51,51,51">3. Set output value as best existing value (standardized or input). 
+Best existing value of email is set as the first non-null value from 
+(in this order) standardized value, input value</modelComment>
+
+
+
+<modelComment bounds="408,24,351,154" borderColor="0,0,0" backgroundColor="255,255,255" foregroundColor="51,51,51">LEGEND</modelComment>
+
+
+
+<modelComment bounds="419,82,330,35" borderColor="183,183,0" backgroundColor="255,255,180" foregroundColor="51,51,51">Detailed comments to solution areas - how it works.</modelComment>
+
+
+
+<modelComment bounds="419,48,330,35" borderColor="183,183,0" backgroundColor="128,255,255" foregroundColor="51,51,51">Comments to main solution areas.</modelComment>
+
+
+
+<modelComment bounds="419,114,330,48" borderColor="183,183,0" backgroundColor="128,255,128" foregroundColor="51,51,51">Additional info related to one step or group of steps – 
+not how it works but why it works like that.</modelComment>
+
+</purity-config>

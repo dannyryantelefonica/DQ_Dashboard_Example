@@ -1,0 +1,204 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<metametadata-library>
+	<imports>
+		<import file="libs/rules.mmdlib" prefix="rules"/>
+	</imports>
+	
+	<nodes>
+		
+
+<node id="dqDimensionRoot" icon="icons/cubes.png" sortChildren="false" name="dqDimensionRoot" label="DQ Dimensions">
+      <subNodes>
+      		
+			
+			<subNode min="1" id="dqDimensionWrapper" max="1"/>
+			</subNodes>
+    <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+        <editor targetNodePath="dqDimensionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New DQ Dimension"/>
+    </editors>
+</node>
+
+<node id="dqDimensionWrapper" sortChildren="false" name="dqDimensionWrapper" label="DQ Dimensions" expanded="true">
+      <subNodes>
+      	
+      <subNode min="0" id="dqDimensionNode" max="-1"/>
+      </subNodes>
+    <editors>
+        <editor targetNodePath="dqDimensionNode" class="com.ataccama.ame.core.editors.CreateChild" label="New DQ Dimension"/>
+    </editors>
+</node>
+
+<node id="dqDimensionNode" icon="icons/cubes_blue.png" sortChildren="true" name="dqDimensionNode" label="DQ Dimension: {@name}" explorerLeaf="false" expanded="false">
+      <attributes>
+        <attribute name="id" label="Dimension ID" type="string" required="true">
+					<description>Technical name of the dimension used as the internal identifier. Not visible in the DQD web application</description>
+				</attribute>
+      	<attribute name="name" label="Name" type="string" required="true">
+					<description>Business name of the DQ dimension as shown in the DQD web application.</description>
+				</attribute>
+      <attribute name="description" label="Description" type="text">
+					<description>Optional explanation of the DQ dimension&#39;s purpose.</description>
+				</attribute>
+			</attributes>
+      <subNodes>
+
+			
+			
+				
+			<subNode min="1" id="dqRuleRoot" max="1"/>
+				<subNode min="1" id="dqDimensionResultWrapper" max="1"/>
+			</subNodes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+      <validations>
+     	 <validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../dqDimensionNode/@id</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for DQ Dimmension ID</message>
+		</validation>
+	</validations>
+</node>
+
+<node id="dqDimensionResultWrapper" sortChildren="true" name="dqDimensionResultWrapper" label="Results" explorerLeaf="false" expanded="true">
+      <subNodes>
+      
+			
+			<subNode min="0" id="dqDimensionResultNode" max="-1"/>
+			</subNodes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+</node>
+
+<node id="dqDimensionResultNode" icon="icons/cube_blue.png" sortChildren="false" name="dqDimensionResultNode" label="{@name}" explorerLeaf="false" expanded="false">
+      <attributes>
+        <attribute name="id" label="Result ID" type="string" required="true">
+					<description>Internal identifier of the result. Not visible in the DQD web application.</description>
+				</attribute>
+      	<attribute name="name" label="Name" type="string" required="true">
+					<description>Business name of the rule as seen in the DQD web application.</description>
+				</attribute>
+      	<attribute height="5" name="description" label="Description" type="text" extendable="true">
+					<description>Optional description of the rule&#39;s purpose.</description>
+				</attribute>
+      </attributes>
+      <editors>
+        <editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+      </editors>
+      <validations>
+            <validation class="com.ataccama.ame.core.validations.RegexpValidation">
+  				<selectPath>@id</selectPath>
+  				<valueExpr>[\S]*</valueExpr>
+  				<message>ID cannot contain whitespaces</message>
+			</validation>
+     	 <validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+  			<selectPath>../dqDimensionResultNode/@id</selectPath>
+  			<message>&#39;{.}&#39; is not unique value for DQ Dimmension result ID</message>
+		</validation>
+      </validations>
+<subNodes>
+				
+			
+			</subNodes>
+		</node>
+
+		
+	<node id="dqCollectionRulesOptionWrapper" icon="icons/folder2_yellow.png" name="dqCollectionRulesOptionWrapper" label="Rule sets" expanded="true">
+			<subNodes>
+				
+			
+			
+			
+			<subNode min="0" id="dqCollectionRulesOptionNode" max="-1"/>
+			</subNodes>
+		<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+			</editors>
+		<description>The list of sub-level Rule sets. Creating hierarchies of Rule sets does not change functionality of the project. But it can help to better understand the project design.</description>
+		</node>
+	<node id="dqCollectionRulesOptionNode" icon="icons/folder2_yellow.png" name="dqCollectionRulesOptionNode" label="{@name}">
+			<subNodes>
+
+			
+				
+			
+				
+			
+				
+			<subNode min="1" id="dqRuleOptionWrapper" max="1"/>
+				<subNode min="1" id="dqCollectionRulesOptionWrapper" max="1"/>
+			</subNodes>
+		<editors>
+			<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor targetNodePath="./dqRuleOptionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Rule">
+		<!-- Create child is used when you need to create new node. Standard property dialog will be opened in order to get information about the new node. 
+		MMD configuration has following attributes:
+class - com.ataccama.ame.core.editors.CreateChild
+label - optional label for the command which will be displayed in the popup menu. 
+		If not specified, the default label will be used.
+targetNodePath - optional MD path expression identifying the parent node, where the child node will be edited. 
+		The path is relative to the current node and if not specified the current node will be used. -->
+		</editor>
+				
+			
+			<editor targetNodePath="./dqCollectionRulesOptionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Rule Set">
+		</editor>
+			<editor class="com.ataccama.ame.core.editors.DeleteChild" label="Delete Rule Set"/>
+			</editors>
+		<attributes>
+				
+			<attribute name="name" type="string"/>
+			</attributes>
+			
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+           			<selectPath>//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/*/@code | //collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*/@code</selectPath>
+           			<message>&#39;{.}&#39; is not unique value for rule ID.</message>
+       			</validation>	
+       			
+       			<validation class="com.ataccama.ame.core.validations.MDPathValidation" inverseCondition="true">
+           			<expression>//dqRuleOptionWrapper/*[@code=//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*/@code]</expression>
+           			<message>&#39;{.}&#39; is not unique value for rule ID.</message>
+       			</validation>		
+			
+       		</validations>
+		
+		</node>
+	<node id="dqRuleOptionWrapper" name="dqRuleOptionWrapper" label="Dimension Rules" expanded="true">
+			<subNodes>
+				
+			
+			
+			
+			<subNode min="0" id="rules.dqDimensionRuleNode" max="-1"/>
+			</subNodes>
+		<description>The list of Dimension Rules.</description>
+		</node>
+	<node id="dqRuleRoot" icon="icons/books.png" name="dqRuleRoot" label="Rules">
+			<subNodes>
+				
+			
+			<subNode min="1" id="dqCollectionRulesOptionWrapper" max="1"/>
+			</subNodes>
+		<attributes>
+				<attribute visible="false" name="ruleType" type="string" defaultValue="Dimension Rule"/>
+			</attributes>
+		<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor targetNodePath="dqCollectionRulesOptionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Rule Set">
+		<!-- Create child is used when you need to create new node. Standard property dialog will be opened in order to get information about the new node. 
+		MMD configuration has following attributes:
+class - com.ataccama.ame.core.editors.CreateChild
+label - optional label for the command which will be displayed in the popup menu. 
+		If not specified, the default label will be used.
+targetNodePath - optional MD path expression identifying the parent node, where the child node will be edited. 
+		The path is relative to the current node and if not specified the current node will be used. -->
+		</editor>
+			</editors>
+		<description>The list of sub-level Rule sets. Creating hierarchies of Rule sets does not change functionality of the project. But it can help to better understand the project design.</description>
+		</node>
+	
+	</nodes>
+	
+</metametadata-library>

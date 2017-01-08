@@ -1,0 +1,678 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<metametadata startPath="/gettingStarted" rootNode="MetadataNode">
+	<imports>
+		<import file="libs/sourceModels.mmdlib" prefix="sourceModels"/>
+		<import file="libs/dbConnections.mmdlib" prefix="dbConnections"/>
+		<import file="libs/masterEntities.mmdlib" prefix="masterEntities"/>
+		<import file="libs/rules.mmdlib" prefix="rules"/>
+		<import file="libs/dqDimensions.mmdlib" prefix="dqDimensions"/>
+	</imports>
+	<fragments>
+		<fragment selectPath="/defaultRuleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/planRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/defaultRuleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/expressionRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/defaultRuleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/defaultRuleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/multiEntityExpressionRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/dqDimensionRoot/dqDimensionWrapper/dqDimensionNode/dqRuleRoot/dqCollectionRulesOptionWrapper//dqCollectionRulesOptionNode/dqRuleOptionWrapper/dqPlanRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/dqDimensionRoot/dqDimensionWrapper/dqDimensionNode/dqRuleRoot/dqCollectionRulesOptionWrapper//dqCollectionRulesOptionNode/dqRuleOptionWrapper/dqExpressionRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/dqDimensionRoot/dqDimensionWrapper/dqDimensionNode/dqRuleRoot/dqCollectionRulesOptionWrapper//dqCollectionRulesOptionNode/dqRuleOptionWrapper/dqCopyRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/dqDimensionRoot/dqDimensionWrapper/dqDimensionNode/dqRuleRoot/dqCollectionRulesOptionWrapper//dqCollectionRulesOptionNode/dqRuleOptionWrapper/dqMultiEntityExpressionRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode/ruleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/planRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode/ruleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/expressionRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode/ruleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/copyRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode/ruleRoot/collectionRulesOptionWrapper//collectionRulesOptionNode/ruleOptionWrapper/multiEntityExpressionRulesNode" fileNameTemplate="md/rules/{@code}.md"/>
+		<fragment selectPath="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode" fileNameTemplate="md/ss_{@code}.md"/>
+	</fragments>
+	<nodes>
+		<node id="MetadataNode" name="md">
+			<subNodes>
+				<subNode min="1" id="preferenceRoot" max="1"/>
+				<subNode min="1" id="dqDimensions.dqDimensionRoot" max="1"/>
+				<subNode min="1" id="sourceSystemRoot" max="1"/>
+				<subNode min="1" id="masterEntities.masterEntityRoot" max="1"/>
+				<subNode min="1" id="defaultRuleRoot" max="1"/>
+				<subNode min="1" id="dbConnections.dataSourcesRoot" max="1"/>
+			</subNodes>
+			<generators>
+				<gen showDialog="false" class="com.ataccama.ame.core.generators.PlaceholderGenerator"/>
+				<gen source="." class="com.ataccama.ame.core.generators.XsltGenerator" templatePath="xslt/gen_dqd_config.xsl" fileNameTemplate="Files/etc/dqd-config.xml"/>
+				<gen source="." class="com.ataccama.ame.core.generators.XsltGenerator" templatePath="xslt/serverConfig.xsl" fileNameTemplate="Files/etc/dqd.serverConfig"/>
+				<gen class="com.ataccama.ame.core.generators.SimpleTemplateFileGenerator" templatePath="xslt/run_processing_all.stg" fileNameTemplate="Files/bin/run_processing_all.bat">
+					<params>
+						<param expression="." name="root"/>
+					</params>
+				</gen>
+				<gen class="com.ataccama.ame.core.generators.SimpleTemplateFileGenerator" templatePath="xslt/start_server.stg" fileNameTemplate="Files/bin/start_server.bat">
+					<params>
+						<param expression="." name="root"/>
+					</params>
+				</gen>
+				<gen class="com.ataccama.ame.core.generators.SimpleTemplateFileGenerator" templatePath="xslt/stop_server.stg" fileNameTemplate="Files/bin/stop_server.bat">
+					<params>
+						<param expression="." name="root"/>
+					</params>
+				</gen>
+				<gen class="com.ataccama.ame.core.generators.SimpleTemplateFileGenerator" templatePath="xslt/deploy_in_server.stg" fileNameTemplate="Files/bin/deploy_in_server.bat">
+					<params>
+						<param expression="." name="root"/>
+					</params>
+				</gen>
+				<gen source="." class="com.ataccama.ame.core.generators.XsltGenerator" templatePath="xslt/runtimeConfig.xsl" fileNameTemplate="Files/etc/dqd.runtimeConfig">
+					<parameters>
+						<param source="/preferenceRoot" name="preferenceRoot"/>
+						<param source="/dataSources" name="dataSources"/>
+					</parameters>
+				</gen>
+			</generators>
+		</node>
+		<node id="sourceSystemRoot" icon="icons/cabinet.png" sortChildren="false" name="sourceSystemRoot" label="Source Systems">
+			<subNodes>
+				<subNode min="1" id="sourceSystemWrapper" max="1"/>
+			</subNodes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor targetNodePath="sourceSystemWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Source System">
+</editor>
+				<editor class="com.ataccama.ame.core.imports.XmlStructureImporter" xsltTemplate="import/transformSourceSystem.xsl">
+					<structure>
+						<node containerPath="sourceSystemWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="code" elementFilter="" displayTemplate="sourceSystemNode {@code}" deletions="IGNORE">
+							<subNodes>
+								<node containerPath="modelWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="code" elementFilter="" displayTemplate="modelNode {@code}" deletions="IGNORE">
+									<subNodes>
+										<node containerPath="lMRoot/lMTableWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="lMTableNode {@name}" deletions="IGNORE">
+											<subNodes>
+												<node containerPath="lMAttributeWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="businessName" elementFilter="" displayTemplate="lMAttributeNode {@name}" deletions="IGNORE">
+								</node>
+												<node containerPath="lMAttributeCollContainerWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="name" elementFilter="" displayTemplate="lMAttributeCollContainer {@code}" deletions="IGNORE">
+								</node>
+											</subNodes>
+										</node>
+									</subNodes>
+								</node>
+								<node containerPath="ruleRoot/collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="ruleRoot/wrapper {@name}" deletions="IGNORE">
+									<subNodes>
+										<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+						</node>
+										<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+											<subNodes>
+												<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+								</node>
+												<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+													<subNodes>
+														<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+										</node>
+														<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+															<subNodes>
+																<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+												</node>
+																<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+																	<subNodes>
+																		<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+														</node>
+																		<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+																			<subNodes>
+																				<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+																</node>
+																			</subNodes>
+																		</node>
+																	</subNodes>
+																</node>
+															</subNodes>
+														</node>
+													</subNodes>
+												</node>
+											</subNodes>
+										</node>
+									</subNodes>
+								</node>
+							</subNodes>
+						</node>
+					</structure>
+				</editor>
+			</editors>
+		</node>
+		<node id="sourceSystemWrapper" sortChildren="false" name="sourceSystemWrapper" label="Defined Source Systems" expanded="true">
+			<subNodes>
+				<subNode min="0" id="sourceSystemNode" max="-1"/>
+			</subNodes>
+			<editors>
+				<editor targetNodePath="sourceSystemNode" class="com.ataccama.ame.core.editors.CreateChild" label="New Source System">
+</editor>
+			</editors>
+		</node>
+		<node id="sourceSystemNode" icon="icons/data_copy.png" sortChildren="false" name="sourceSystemNode" label="{@name}">
+			<attributes>
+				<attribute name="code" label="ID" type="string" required="true">
+					<description>Internal identifier of the source system. Not visible in the DQD web application.</description>
+				</attribute>
+				<attribute name="name" label="Name" type="string" required="true">
+					<description>Name of the source system as seen in the DQD web application.</description>
+				</attribute>
+				<attribute visible="true" name="enable" label="Enable" type="boolean" required="true" defaultValue="false">
+					<description>Disabled system is not displayed in frontend and no rules are calculated for this system.</description>
+				</attribute>
+				<attribute name="description" label="Description" type="text">
+					<description>Space for optional details about the source system.</description>
+				</attribute>
+			</attributes>
+			<subNodes>
+				<subNode min="1" id="ruleRoot" max="1"/>
+				<subNode min="1" id="sourceModels.modelWrapper" max="1"/>
+			</subNodes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor class="com.ataccama.ame.core.editors.DeleteChild" label="Delete Source System"/>
+			</editors>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+					<selectPath>../sourceSystemNode/@code</selectPath>
+					<message>&#39;{.}&#39; is not unique value for Source system attribute &#39;name&#39;</message>
+				</validation>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@databaseConnection</selectPath>
+					<valueExpr>.+</valueExpr>
+					<message>Database Connection has to be specified</message>
+				</validation>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@name</selectPath>
+					<valueExpr>[\p{L}\p{Digit} _]+</valueExpr>
+					<message>Source system name contains not allowed characters</message>
+				</validation>
+			</validations>
+			<description>Source model represents one input interface for DQD that can be processed individually.</description>
+			<generators>
+				<gen class="com.ataccama.ame.core.generators.SimpleTemplateFileGenerator" templatePath="xslt/run_processing_system.stg" fileNameTemplate="Files/bin/run_processing_{@code}.bat">
+					<params>
+						<param expression="." name="root"/>
+					</params>
+				</gen>
+			</generators>
+		</node>
+		<node id="ruleRoot" icon="icons/books.png" sortChildren="false" name="ruleRoot" label="Rules">
+			<subNodes>
+				<subNode min="1" id="collectionRulesOptionWrapper" max="1"/>
+			</subNodes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor targetNodePath="collectionRulesOptionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Rule Set">
+</editor>
+			</editors>
+			<attributes>
+				<attribute visible="false" name="ruleType" type="string" defaultValue="systemRule"/>
+			</attributes>
+			<generators>
+				<gen class="com.ataccama.ame.core.generators.PlaceholderGenerator">
+			<!-- Generator does not generate any file, it merely causes the UI to show the Generate... action. -->
+		</gen>
+			</generators>
+		</node>
+		<node id="defaultRuleRoot" icon="icons/books.png" sortChildren="false" name="defaultRuleRoot" label="Generic Rules">
+			<subNodes>
+				<subNode min="1" id="collectionRulesOptionWrapper" max="1"/>
+			</subNodes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor targetNodePath="collectionRulesOptionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Rule Set">
+</editor>
+				<editor class="com.ataccama.ame.core.imports.XmlStructureImporter" xsltTemplate="import/transformGenericRules.xsl">
+					<structure>
+						<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+							<subNodes>
+								<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+				</node>
+								<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+									<subNodes>
+										<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+						</node>
+										<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+											<subNodes>
+												<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+								</node>
+												<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+													<subNodes>
+														<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+										</node>
+														<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+															<subNodes>
+																<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+												</node>
+																<node containerPath="collectionRulesOptionWrapper" additions="ACCEPT" matchTemplate="{@name}" attributeFilter="*" elementFilter="" displayTemplate="wrapper {@name}" deletions="IGNORE">
+																	<subNodes>
+																		<node containerPath="ruleOptionWrapper" additions="ACCEPT" matchTemplate="{@code}" attributeFilter="description" elementFilter="" displayTemplate="rule {@code}" deletions="IGNORE">					
+														</node>
+																	</subNodes>
+																</node>
+															</subNodes>
+														</node>
+													</subNodes>
+												</node>
+											</subNodes>
+										</node>
+									</subNodes>
+								</node>
+							</subNodes>
+						</node>
+					</structure>
+				</editor>
+			</editors>
+			<attributes>
+				<attribute visible="false" name="ruleType" type="string" defaultValue="Validity Rule"/>
+			</attributes>
+			<generators>
+				<gen class="com.ataccama.ame.core.generators.PlaceholderGenerator">
+			<!-- Generator does not generate any file, it merely causes the UI to show the Generate... action. -->
+		</gen>
+			</generators>
+		</node>
+		<node id="preferenceRoot" icon="icons/settings.png" name="preferenceRoot" label="Preferences" explorerLeaf="true">
+			<subNodes>
+				<subNode min="1" id="dataSampleNode" max="1"/>
+				<subNode min="1" id="versionNode" max="1"/>
+			</subNodes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+			</editors>
+			<attributes>
+				<attribute name="datamart" label="Datamart Connection" type="list" required="true">
+					<valuesProvider class="com.ataccama.ame.core.assist.PathValuesProvider">
+						<selectPath>/dataSources/dataSource/@name</selectPath>
+					</valuesProvider>
+					<description>Name of the connection to the datamart, which stores all DQ check result information and allows DQD end-users to view DQ statistics of all relevant source systems.</description>
+				</attribute>
+				<attribute name="effectiveDate" label="Effective Date Source" type="enum" required="true" enumValues="NowDateProvider,PlanDateProvider,ParameterDateProvider" defaultValue="NowDateProvider">
+					<description>&lt;p&gt;Method determining Effective Date displayed in web application as date of data processing.&lt;/p&gt;
+&lt;p&gt;Available methods:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;b&gt;NowDateProvider&lt;/b&gt; - the assigned date corresponds to the actual date of processing&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;PlanDateProvider&lt;/b&gt;  - the assigned date is inherited from the output of a component &lt;i&gt;Files/engine/load/effective_date.comp&lt;/i&gt;&lt;/li&gt;
+&lt;li&gt;&lt;b&gt;ParameterDateProvider&lt;/b&gt; - the date is expected as engine parameter named &lt;kbd&gt;effective_date&lt;/kbd&gt; in  format &lt;kbd&gt;yyyy-MM-dd HH:mm:ss&lt;/kbd&gt;&lt;/li&gt;
+&lt;/ul&gt;</description>
+				</attribute>
+				<attribute name="filterCombLimit" label="[Advanced] Filter Combination Limit" type="integer" required="true" defaultValue="10000">
+					<description>Maximal allowed number of filter values combinations&lt;br&gt;
+If number of filter combinations found in source data exceeds Limit, processing will fail.&lt;br&gt;
+Allowed value range: 10 - 99.999.&lt;br&gt;</description>
+				</attribute>
+			</attributes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+					<expression>/dataSources/dataSource[@name=$current/@datamart and (@driverClass=&#39;oracle.jdbc.OracleDriver&#39; or @driverClass=&#39;org.apache.derby.jdbc.ClientDriver&#39; or @driverClass=&#39;com.microsoft.sqlserver.jdbc.SQLServerDriver&#39; or @driverClass=&#39;org.postgresql.Driver&#39;)]</expression>
+					<message>&#39;{@datamart}&#39; is not supported database. Supported DBs: Oracle, Apache Derby, MSSQL, PostgreSQL</message>
+				</validation>
+				<validation class="com.ataccama.ame.core.validations.RegexpValidation">
+					<selectPath>@filterCombLimit</selectPath>
+					<valueExpr>^[1-9][0-9]{1,5}$</valueExpr>
+					<message>Allowed range for Filter Combination Limit: 10 - 99.999</message>
+				</validation>
+			</validations>
+			<description>The Preferences node contains metadata regarding the DQD datamart connection and runtime folder location, plus parameters defining how the Drill through feature is displayed. These settings only pertain to the front-end part and are not prerequisite to any of project configuration steps.</description>
+		</node>
+		<node id="dataSampleNode" name="dataSample" newTab="true" label="Output Record Sets" explorerLeaf="false" expanded="true">
+			<attributes>
+				<attribute name="outputDir" label="Full Output Directory Path" type="string" required="false">
+					<description>Directory where full output of full dataset is written at the end of every processing.
+The directory must exist and be writable. If not defined, records are not written.</description>
+				</attribute>
+				<attribute name="fileNamePattern" label="Full Output Filename" type="string" defaultValue="dqd_${processing.start:yyMMdd}_${processing.start:HHmmss}_{@system}_${model}.csv">
+					<description>Pattern for filenames where full output of full dataset is stored.&lt;br&gt;
+Available parameters:&lt;br&gt;
+
+&lt;kbd&gt;${processing.start}&lt;/kbd&gt;	start of processing&lt;br&gt;
+&lt;kbd&gt;${processing.effectiveDate}&lt;/kbd&gt;	effective date of processing&lt;br&gt;
+&lt;kbd&gt;${model}&lt;/kbd&gt;	processed model code&lt;br&gt;
+&lt;kbd&gt;${system}&lt;/kbd&gt;	processed model&#39;s system code&lt;br&gt;</description>
+				</attribute>
+				<attribute name="sampleSize" label="Noncomplying Record Sample Size" type="integer" defaultValue="10">
+					<description>Number of records to be stored into datamart as noncomplying record sample accessible form web application&lt;br&gt;
+Default 10, maximum 1000.</description>
+				</attribute>
+			</attributes>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.MDPathValidation">
+					<expression>.[@sampleSize &lt;= 1000 and @sampleSize &gt;= 0]</expression>
+					<message>Allowed range for Sample size: 0-1000.</message>
+				</validation>
+			</validations>
+		</node>
+		<node id="collectionRulesOptionNode" abstract="false" icon="icons/folder2_red.png" name="collectionRulesOptionNode" label="{@name}" explorerLeaf="false" expanded="false">
+			<attributes>
+				<attribute name="name" type="string"/>
+			</attributes>
+			<subNodes>
+				<subNode min="1" id="ruleOptionWrapper" max="1"/>
+				<subNode min="1" id="collectionRulesOptionWrapper" max="1"/>
+			</subNodes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+				<editor targetNodePath="./ruleOptionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Rule">
+		<!-- Create child is used when you need to create new node. Standard property dialog will be opened in order to get information about the new node. 
+		MMD configuration has following attributes:
+class - com.ataccama.ame.core.editors.CreateChild
+label - optional label for the command which will be displayed in the popup menu. 
+		If not specified, the default label will be used.
+targetNodePath - optional MD path expression identifying the parent node, where the child node will be edited. 
+		The path is relative to the current node and if not specified the current node will be used. -->
+		</editor>
+				<editor targetNodePath="./collectionRulesOptionWrapper" class="com.ataccama.ame.core.editors.CreateChild" label="New Rule Set">
+		</editor>
+				<editor class="com.ataccama.ame.core.editors.DeleteChild" label="Delete Rule Set"/>
+			</editors>
+			<validations>
+				<validation class="com.ataccama.ame.core.validations.UniqueValuesValidation">
+					<selectPath>//collectionRulesOptionWrapper/collectionRulesOptionNode/ruleOptionWrapper/*/@code | //dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/*/@code</selectPath>
+					<message>&#39;{.}&#39; is not unique value for rule ID.</message>
+				</validation>
+				<validation class="com.ataccama.ame.core.validations.MDPathValidation" inverseCondition="true">
+					<expression>//ruleOptionWrapper/*[@code=//dqCollectionRulesOptionWrapper/dqCollectionRulesOptionNode/dqRuleOptionWrapper/*/@code]</expression>
+					<message>&#39;{.}&#39; is not unique value for rule ID.</message>
+				</validation>
+			</validations>
+		</node>
+		<node id="collectionRulesOptionWrapper" name="collectionRulesOptionWrapper" label="Rule Sets" expanded="true">
+			<subNodes>
+				<subNode min="0" id="collectionRulesOptionNode" max="-1"/>
+			</subNodes>
+			<attributes>
+				
+			
+				
+			</attributes>
+			<editors>
+				<editor openModal="true" class="com.ataccama.ame.core.editors.PropertyEditor"/>
+			</editors>
+			<description>List of validity rules.</description>
+		</node>
+		<node id="ruleOptionWrapper" visibleInParent="true" visible="true" name="ruleOptionWrapper" label="Generic Rules" expanded="true">
+			<attributes>
+				
+			
+			
+			</attributes>
+			<subNodes>
+				<subNode min="0" id="rules.ruleNode" max="-1"/>
+			</subNodes>
+			<description>List of validity Generic Rules.</description>
+		</node>
+		<node id="versionNode" visible="true" generated="true" name="versionNode" newTab="true" label="Version Info" expanded="true">
+			<attributes>
+				<attribute name="version" type="string"/>
+			</attributes>
+		</node>
+	</nodes>
+	<computedContent><!--
+		<mountPoint path="/sourceSystemRoot//lMAttributeCollContainer/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_attribute_coll_rules.xsl"/>
+			</producers>
+		</mountPoint>--><mountPoint path="/sourceSystemRoot//lMAttributeCollContainerOneEntity/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_coll_attr.xsl">
+					<parameters>
+						<param source=".." name="lMAttributeCollContainerOneEntity"/>
+						<param source=".." name="lMAttributeCollContainerMultiEntityParent"/>
+						<param source=".." name="lMAttributeCollContainerMultiEntityParent"/>
+						<param source="ancestor::sourceSystemNode/ruleRoot" name="ruleRoot"/>
+						<param source="/dqDimensionRoot" name="dqDimensionRoot"/>
+						<param source="/defaultRuleRoot" name="defaultRuleRoot"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot//lMAttributeCollContainerMultiEntityParent/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_coll_attr.xsl">
+					<parameters>
+						<param source=".." name="lMAttributeCollContainerOneEntity"/>
+						<param source=".." name="lMAttributeCollContainerMultiEntityParent"/>
+						<param source=".." name="lMAttributeCollContainerMultiEntityParent"/>
+						<param source="ancestor::sourceSystemNode/ruleRoot" name="ruleRoot"/>
+						<param source="/dqDimensionRoot" name="dqDimensionRoot"/>
+						<param source="/defaultRuleRoot" name="defaultRuleRoot"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot//lMAttributeCollContainerMultiEntityChild/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_coll_attr.xsl">
+					<parameters>
+						<param source=".." name="lMAttributeCollContainerOneEntity"/>
+						<param source=".." name="lMAttributeCollContainerMultiEntityParent"/>
+						<param source=".." name="lMAttributeCollContainerMultiEntityParent"/>
+						<param source="ancestor::sourceSystemNode/ruleRoot" name="ruleRoot"/>
+						<param source="/dqDimensionRoot" name="dqDimensionRoot"/>
+						<param source="/defaultRuleRoot" name="defaultRuleRoot"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot//lMForeignKeyNode/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_lMForeignKey.xsl">
+					<parameters>
+						<param source="ancestor::lMRoot" name="lMRoot"/>
+						<param source="ancestor::lMRelationshipNode" name="lMRelationshipNode"/>
+						<param source="ancestor::lMForeignKeyNode" name="lMForeignKeyNode"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot//ccCollType">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_attribute_rule_type.xsl">
+					<parameters>
+						<param source="ancestor::lMAttributeCollContainerOneEntity" name="lMAttributeCollContainerOneEntity"/>
+						<param source="ancestor::lMAttributeCollContainerMultiEntityParent" name="lMAttributeCollContainerMultiEntityParent"/>
+						<param source="ancestor::lMAttributeCollContainerMultiEntityChild" name="lMAttributeCollContainerMultiEntityChild"/>
+						<param source="/defaultRuleRoot" name="defaultRuleRoot"/>
+						<param source="ancestor::sourceSystemNode/ruleRoot" name="ruleRoot"/>
+						<param source="/dqDimensionRoot" name="dqDimensionRoot"/>
+						<param source="ancestor::lMTableNode" name="lMTableNode"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot//entityAttributeNode/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_entities.xsl"/>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot//lMAttributeNode/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_attribute_rules.xsl">
+					<parameters>
+						<param source="ancestor::sourceSystemNode/ruleRoot" name="ruleRoot"/>
+						<param source="/dqDimensionRoot" name="dqDimensionRoot"/>
+						<param source="/defaultRuleRoot" name="defaultRuleRoot"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/masterEntityRoot//masterEntityRelationshipNode/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_master_entities.xsl"/>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot//dimensionNode/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_dimensions.xsl"/>
+			</producers>
+		</mountPoint><!--
+		<mountPoint path="/sourceSystemRoot//lMSortOrderNode/cc">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_small_sort_order.xsl"/>
+			</producers>
+		</mountPoint>	
+		--><!--<mountPoint path="/computedStructure">
+			<producers>
+				<contentProducer source="/" class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/computedStructure.xsl"/>
+			</producers>
+		</mountPoint>
+	 --><!--
+		<mountPoint path="/computed_content">
+			<producers>
+				<contentProducer source="/" class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/computedContent.xsl"/>
+			</producers>
+			<subContent>
+				<mountPoint path="ccPlans/srcSystem/multiTableWrapper/multiTable/commonAncestorWrapper">
+      				<producers>
+						<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/compute_common_ancestor.xsl">
+							<parameters>
+								<param source="/computedStructure" name="computedStructure"/>
+								<param source="/computed_content" name="computedContent"/>
+								<param source="../../.." name="srcSystem"/>
+			    			</parameters>
+            			</contentProducer>
+					</producers>
+      			</mountPoint>
+      			
+      			<mountPoint path="ccPlans/srcSystem/agrgWrapper/agrg/commonAncestorWrapper">
+      				<producers>
+						<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/compute_common_ancestor.xsl">
+							<parameters>
+								<param source="/computedStructure" name="computedStructure"/>
+								<param source="/computed_content" name="computedContent"/>
+								<param source="../../.." name="srcSystem"/>
+			    			</parameters>
+            			</contentProducer>
+					</producers>
+      			</mountPoint>
+
+      			<mountPoint path="ccPlans/srcSystem/agrgWrapper/agrg/agrgRuleWrapper/agrgRule/cc">
+      				<producers>
+						<contentProducer source="." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/compute_rule_id.xsl">
+							<parameters>
+								<param source="../../../../.." name="srcSystem"/>
+								<param source="../../../../../../../ccRuleWrapper" name="rules"/>
+								<param source=".." name="rule"/>
+			    			</parameters>
+            			</contentProducer>
+					</producers>
+      			</mountPoint>  
+      			  
+      			  
+      			<mountPoint path="ccPlans/srcSystem/tableWrapper/table/cc">
+					<producers>
+						<contentProducer source="../../../.." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_rset_id.xsl">
+							<parameters>
+								<param source="../../.." name="srcSystem"/>
+								<param source=".." name="element"/>
+			    			</parameters>
+			    		</contentProducer>
+					</producers>
+				</mountPoint>
+				
+				<mountPoint path="ccPlans/srcSystem/multiTableWrapper/multiTable/cc">
+					<producers>
+						<contentProducer source="../../../.." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_rset_id.xsl">
+							<parameters>
+								<param source="../../.." name="srcSystem"/>
+								<param source=".." name="element"/>
+			    			</parameters>
+			    		</contentProducer>
+					</producers>
+				</mountPoint>
+				
+				<mountPoint path="ccPlans/srcSystem/agrgWrapper/agrg/cc">
+					<producers>
+						<contentProducer source="../../../.." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_rset_id.xsl">
+							<parameters>
+								<param source="../../.." name="srcSystem"/>
+								<param source=".." name="element"/>
+			    			</parameters>
+			    		</contentProducer>
+					</producers>
+				</mountPoint>
+				
+				<mountPoint path="ccPlans/srcSystem/tableWrapper/table/ancestorWrapper/ancestor/columnWrapper/column/cc">
+					<producers>
+						<contentProducer source="ancestor::table" class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_rset_att_id.xsl">
+							<parameters>
+								<param source="ancestor::srcSystem" name="srcSystem"/>
+								<param source="ancestor::table" name="element"/>
+								<param source="ancestor::ancestor" name="sTable"/>
+								<param source=".." name="column"/>
+			    			</parameters>
+			    		</contentProducer>
+					</producers>
+				</mountPoint>
+				
+				
+				<mountPoint path="ccPlans/srcSystem/multiTableWrapper/multiTable/commonAncestorWrapper/*/columnWrapper/column/cc">
+					<producers>
+						<contentProducer source="ancestor::multiTable" class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_rset_att_id.xsl">
+							<parameters>
+								<param source="ancestor::srcSystem" name="srcSystem"/>
+								<param source="ancestor::multiTable" name="element"/>
+								<param source=".." name="column"/>
+			    			</parameters>
+			    		</contentProducer>
+					</producers>
+				</mountPoint>
+				
+				<mountPoint path="ccPlans/srcSystem/agrgWrapper/agrg/commonAncestorWrapper/*/columnWrapper/column/cc">
+					<producers>
+						<contentProducer source="ancestor::agrg" class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_rset_att_id.xsl">
+							<parameters>
+								<param source="ancestor::srcSystem" name="srcSystem"/>
+								<param source="ancestor::agrg" name="element"/>
+								<param source=".." name="column"/>
+			    			</parameters>
+			    		</contentProducer>
+					</producers>
+				</mountPoint>
+				
+      			<mountPoint path="ccRuleInstWrapper/ccRuleInst/cc">
+      				<producers>
+						<contentProducer source="." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/compute_rule_inst_id.xsl">
+							<parameters>
+								<param source="//ccPlans" name="srcSystem"/>
+								<param source=".." name="rule"/>
+			    			</parameters>
+            			</contentProducer>
+					</producers>
+      			</mountPoint>  	
+      			
+      			<mountPoint path="ccEntityWrapper/ccEntity/cc">
+      				<producers>
+						<contentProducer source="." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/compute_agrg_id.xsl">
+							<parameters>
+								<param source="//ccPlans" name="srcSystem"/>
+								<param source=".." name="agrg"/>
+			    			</parameters>
+            			</contentProducer>
+					</producers>
+      			</mountPoint>  	
+			</subContent>
+		</mountPoint>
+		--><mountPoint path="/dataSources">
+			<producers>
+				<contentProducer class="com.ataccama.ame.core.contentproducers.DataSourceContentProducer"/>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode/modelWrapper/modelNode/lMRoot/lMTableWrapper/lMTableNode/centralEntityNode">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_centralEntity.xsl">
+					<parameters>
+						<param source="ancestor::lMRoot" name="lMRoot"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/sourceSystemRoot/sourceSystemWrapper/sourceSystemNode/modelWrapper/modelNode/entityRoot/entityContainerWrapper//entityContainer/ccAggregation">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_aggregations.xsl">
+					<parameters>
+						<param source="../../.." name="parentEntityContainers"/>
+						<param source="ancestor::entityRoot" name="entityRoot"/>
+					</parameters>
+				</contentProducer>
+			</producers>
+		</mountPoint>
+		<mountPoint path="/preferenceRoot/versionNode">
+			<producers>
+				<contentProducer source=".." class="com.ataccama.ame.core.contentproducers.XsltContentProducer" templatePath="xslt/cc_dqdVersion.xsl">			
+				</contentProducer>
+			</producers>
+		</mountPoint>
+	</computedContent>
+</metametadata>
